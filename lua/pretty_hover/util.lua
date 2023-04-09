@@ -64,7 +64,6 @@ M.convert_to_markdown = function(toConvert, opts)
 			table.remove(tbl, 1)
 			chunk = M.joint_table(tbl, " ")
 
-			print("chunk: " .. chunk)
 			if firstParam and operation == "@param" then
 				firstParam = false
 				table.insert(result, "---")
