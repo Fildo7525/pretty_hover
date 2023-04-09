@@ -27,24 +27,17 @@ M.hover = function()
 	vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(responses)
 		for _, response in pairs(responses) do
 			if response.result and response.result.contents then
+				local contents = response.result.contents
 
-				local hover_text = response.result.contents.value
-				-- Convert Doxygen comments to Markdown format
-				local tbl = h_util.convert_to_markdown(hover_text, M.config)
-
-				local bufnr, winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {border = M.config.border, focusable = true})
-				M.bufnr = bufnr
-				M.winnr = winnr
-
-				vim.wo[M.winnr].foldenable = false
-				vim.bo[M.bufnr].modifiable = false
-				vim.bo[M.bufnr].bufhidden = 'wipe'
-
-				vim.keymap.set('n', 'q', function ()
-					api.nvim_win_close(winnr, true)
-					M.winnr = 0
-					M.bufnr = 0
-				end, { buffer = bufnr, silent = true, nowait = true })
+				if type(contents) == "table" then
+					for _, content in pairs(contents) do
+						local hover_text = content.value or content
+						h_util.open_float(hover_text, M.config)
+					end
+				else
+					local hover_text = response.result.contents.value
+					h_util.open_float(hover_text, M.config)
+				end
 			end
 		end
 	end)

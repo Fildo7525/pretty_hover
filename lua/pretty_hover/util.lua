@@ -103,5 +103,24 @@ M.convert_to_markdown = function(toConvert, opts)
 	return result
 end
 
+M.open_float = function(hover_text, config)
+	-- Convert Doxygen comments to Markdown format
+	local tbl = M.convert_to_markdown(hover_text, config)
+
+	local bufnr, winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {border = config.border, focusable = true})
+	M.bufnr = bufnr
+	M.winnr = winnr
+
+	vim.wo[M.winnr].foldenable = false
+	vim.bo[M.bufnr].modifiable = false
+	vim.bo[M.bufnr].bufhidden = 'wipe'
+
+	vim.keymap.set('n', 'q', function ()
+		vim.api.nvim_win_close(winnr, true)
+		M.winnr = 0
+		M.bufnr = 0
+	end, { buffer = bufnr, silent = true, nowait = true })
+end
+
 return M
 
