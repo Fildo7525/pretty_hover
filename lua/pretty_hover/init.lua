@@ -36,6 +36,10 @@ M.hover = function()
 				M.bufnr = bufnr
 				M.winnr = winnr
 
+				vim.wo[M.winnr].foldenable = false
+				vim.bo[M.bufnr].modifiable = false
+				vim.bo[M.bufnr].bufhidden = 'wipe'
+
 				vim.keymap.set('n', 'q', function ()
 					api.nvim_win_close(winnr, true)
 					M.winnr = 0
