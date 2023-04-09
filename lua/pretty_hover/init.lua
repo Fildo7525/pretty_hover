@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 M.winnr = 0
 M.bufnr = 0
