@@ -25,9 +25,8 @@ Using pretty_hover
 ```lua
 {
 	"Fildo7525/pretty_hover",
-	config = function()
-		require("pretty_hover").setup(options)
-	end
+	event = "LspAttach",
+	opts = {}
 },
 ```
 
