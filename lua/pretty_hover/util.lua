@@ -62,33 +62,30 @@ M.convert_to_markdown = function(toConvert, opts)
 	local firstSee = true
 
 	for _, chunk in pairs(chunks) do
-		local el = M.split(chunk)[1]
+		local tbl = M.split(chunk)
+		local el = tbl[1]
 
 		if M.tbl_contains(opts.line, el) then
-			local tbl = M.split(chunk)
 			table.remove(tbl, 1)
 			chunk = M.joint_table(tbl, " ")
 			table.insert(result, opts.stylers.line .. chunk .. opts.stylers.line)
 			table.insert(result, "")
 
 		elseif M.tbl_contains(opts.header, el) then
-			local tbl = M.split(chunk)
 			table.remove(tbl, 1)
 			chunk = M.joint_table(tbl, " ")
 			table.insert(result, opts.stylers.header .. " " .. chunk)
 			table.insert(result, "")
 
 		elseif M.tbl_contains(opts.word, el) then
-			local tbl = M.split(chunk)
-			local operation = tbl[1]
 			tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
 			table.remove(tbl, 1)
 			chunk = M.joint_table(tbl, " ")
 
-			if firstParam and operation == "@param" then
+			if firstParam and el == "@param" then
 				firstParam = false
 				table.insert(result, "---")
-			elseif firstSee and operation == "@see" then
+			elseif firstSee and el == "@see" then
 				firstSee = false
 				table.insert(result, "---")
 				table.insert(result, "**See**")
