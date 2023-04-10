@@ -29,7 +29,10 @@ M.hover = function()
 			if response.result and response.result.contents then
 				local contents = response.result.contents
 
-				if type(contents) == "table" then
+				-- We have to do this because of java. Sometimes is the value parameter split
+				-- into two chunks. Leaving the rest of the hover message as the second argument
+				-- in the received table.
+				if contents.language == "java" then
 					for _, content in pairs(contents) do
 						local hover_text = content.value or content
 						h_util.open_float(hover_text, M.config)
