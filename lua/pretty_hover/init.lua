@@ -1,7 +1,5 @@
 local M = {}
 
-M.winnr = 0
-M.bufnr = 0
 M.config = {}
 
 local api = vim.api
@@ -14,12 +12,12 @@ M.hover = function()
 
 
 	-- check if this popup is focusable and we need to focus
-	if M.winnr ~= 0 then
-		if not api.nvim_win_is_valid(M.winnr) then
-			M.winnr = 0
-			M.bufnr = 0
+	if h_util.winnr ~= 0 then
+		if not api.nvim_win_is_valid(h_util.winnr) then
+			h_util.winnr = 0
+			h_util.bufnr = 0
 		else
-			api.nvim_set_current_win(M.winnr)
+			api.nvim_set_current_win(h_util.winnr)
 			return
 		end
 	end

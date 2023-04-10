@@ -1,5 +1,8 @@
 local M = {}
 
+M.winnr = 0
+M.bufnr = 0
+
 --- Splits a string into a table of strings.
 ---@param toSplit string String to be split.
 ---@param separator string|nil The separator. If not defined, the separator is set to "%S+".
