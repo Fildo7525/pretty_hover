@@ -40,6 +40,18 @@ use {
 }
 ```
 
+### Using Pretty Hover
+To open a hover window, run the following lua snippet (or bind it to a key)
+```lua
+require("pretty_hover").hover()
+```
+
+To close a hover window, run the following lua snippet (or bind it to a key)
+```lua
+require("pretty_hover").close()
+```
+**NOTE: When focused on a hover window, you can also press `q` to close the hover window**
+
 ### Configuration
 
 The configuration consists of four parts. `line` is a table containing all the words after which will the whole line surrounded by `stylers.line` character.
