@@ -105,7 +105,17 @@ end
 
 M.close_float = function()
 	-- Safeguard around accidentally calling close when there is no pretty_hover window open
-	if M.winnr == 0 and M.bufnr == 0 then return end
+	if M.winnr == 0 and M.bufnr == 0 then
+		return
+	end
+
+	-- Befor closing the window, check if it is still valid.
+	if not vim.api.nvim_win_is_valid(M.winnr) then
+		M.winnr = 0
+		M.bufnr = 0
+		return
+	end
+
 	vim.api.nvim_win_close(M.winnr, true)
 	M.winnr = 0
 	M.bufnr = 0
