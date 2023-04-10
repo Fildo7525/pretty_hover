@@ -103,6 +103,14 @@ M.convert_to_markdown = function(toConvert, opts)
 	return result
 end
 
+M.close_float = function()
+	-- Safeguard around accidentally calling close when there is no pretty_hover window open
+	if M.winnr == 0 and M.bufnr == 0 then return end
+	vim.api.nvim_win_close(M.winnr, true)
+	M.winnr = 0
+	M.bufnr = 0
+end
+
 M.open_float = function(hover_text, config)
 	-- Convert Doxygen comments to Markdown format
 	local tbl = M.convert_to_markdown(hover_text, config)
@@ -115,11 +123,7 @@ M.open_float = function(hover_text, config)
 	vim.bo[M.bufnr].modifiable = false
 	vim.bo[M.bufnr].bufhidden = 'wipe'
 
-	vim.keymap.set('n', 'q', function ()
-		vim.api.nvim_win_close(winnr, true)
-		M.winnr = 0
-		M.bufnr = 0
-	end, { buffer = bufnr, silent = true, nowait = true })
+	vim.keymap.set('n', 'q', M.close_float, { buffer = bufnr, silent = true, nowait = true })
 end
 
 return M
