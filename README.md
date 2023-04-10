@@ -14,10 +14,10 @@ The output can be easily manipulated with. This will result in more readable hov
 ### How it looks
 
 Using native vim.lsp.buf.hover()
-<img src="https://github.com/Fildo7525/pretty_hover/blob/master/doc/img/before.png">
+<img src="https://user-images.githubusercontent.com/59179935/230844931-49fdd776-2bf1-4017-8f08-fe4ac900c7c8.png">
 
 Using pretty_hover
-<img src="https://github.com/Fildo7525/pretty_hover/blob/master/doc/img/after.png">
+<img src="https://user-images.githubusercontent.com/59179935/230844929-fde11267-9b4f-4560-92e0-55cef8f2d457.png">
 
 ## Installation and setup
 
