@@ -49,4 +49,8 @@ M.setup = function(opts)
 	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), opts)
 end
 
+M.close = function()
+	h_util.close_float()
+end
+
 return M
