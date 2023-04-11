@@ -14,6 +14,10 @@ M.split = function(toSplit, separator)
 		separator = "%S+"
 	end
 
+	if toSplit == nil then
+		return {}
+	end
+
 	local chunks = {}
 	for substring in toSplit:gmatch(separator) do
 		table.insert(chunks, substring)
@@ -72,10 +76,13 @@ end
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@return table Converted table of strings from doxygen to markdown.
 M.convert_to_markdown = function(toConvert, opts)
-	local chunks = M.split(toConvert, "([^\n]*)\n?")
 	local result = {}
 	local firstParam = true
 	local firstSee = true
+	local chunks = M.split(toConvert, "([^\n]*)\n?")
+	if #chunks == 0 then
+		return result
+	end
 
 	for _, chunk in pairs(chunks) do
 		local tbl = M.split(chunk)
@@ -137,6 +144,10 @@ end
 M.open_float = function(hover_text, config)
 	-- Convert Doxygen comments to Markdown format
 	local tbl = M.convert_to_markdown(hover_text, config)
+	if #tbl == 0 then
+		vim.notify("Cannot open hover")
+		return
+	end
 
 	local bufnr, winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {
 		border = config.border,
