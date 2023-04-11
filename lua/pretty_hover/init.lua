@@ -10,18 +10,6 @@ M.hover = function()
 	local util = require('vim.lsp.util')
 	local params = util.make_position_params()
 
-
-	-- check if this popup is focusable and we need to focus
-	if h_util.winnr ~= 0 then
-		if not api.nvim_win_is_valid(h_util.winnr) then
-			h_util.winnr = 0
-			h_util.bufnr = 0
-		else
-			api.nvim_set_current_win(h_util.winnr)
-			return
-		end
-	end
-
 	vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(responses)
 		for _, response in pairs(responses) do
 			if response.result and response.result.contents then

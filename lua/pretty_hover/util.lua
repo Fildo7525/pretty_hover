@@ -129,7 +129,9 @@ M.open_float = function(hover_text, config)
 
 	local bufnr, winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {
 		border = config.border,
-		focusable = true
+		focusable = true,
+		focus = true,
+		focus_id = "pretty-hover",
 	})
 	M.bufnr = bufnr
 	M.winnr = winnr
