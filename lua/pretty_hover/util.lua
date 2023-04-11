@@ -1,3 +1,5 @@
+local api = vim.api
+
 local M = {}
 
 M.winnr = 0
@@ -110,13 +112,13 @@ M.close_float = function()
 	end
 
 	-- Befor closing the window, check if it is still valid.
-	if not vim.api.nvim_win_is_valid(M.winnr) then
+	if not api.nvim_win_is_valid(M.winnr) then
 		M.winnr = 0
 		M.bufnr = 0
 		return
 	end
 
-	vim.api.nvim_win_close(M.winnr, true)
+	api.nvim_win_close(M.winnr, true)
 	M.winnr = 0
 	M.bufnr = 0
 end
