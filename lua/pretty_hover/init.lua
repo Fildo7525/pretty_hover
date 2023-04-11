@@ -2,13 +2,19 @@ local M = {}
 
 M.config = {}
 
-local api = vim.api
 local h_util = require("pretty_hover.util")
 
 --- Parses the response from the server and displays the hover information converted to markdown.
 M.hover = function()
 	local util = require('vim.lsp.util')
 	local params = util.make_position_params()
+
+	-- Check if the server for this filetype exists and supports hover.
+	local client = h_util.get_current_active_clent()
+	if not client then
+		vim.notify("The hover action is not supported in this filetype", vim.log.levels.INFO)
+		return
+	end
 
 	vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(responses)
 		for _, response in pairs(responses) do

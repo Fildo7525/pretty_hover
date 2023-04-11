@@ -56,6 +56,17 @@ M.tbl_contains = function(tbl, el)
 	return false
 end
 
+--- This function checks all the active clients for current buffer and returns the active client that supports the current filetype.
+---@return table|nil Active client for the current buffer or nil if there is no active client.
+M.get_current_active_clent = function()
+	for _, client in ipairs(vim.lsp.get_active_clients()) do
+		if M.tbl_contains(client.config.filetypes, vim.bo.filetype) then
+			return client
+		end
+	end
+	return nil
+end
+
 --- Converts a string returned by response.result.contents.value from vim.lsp[textDocument/hover] to markdown.
 ---@param toConvert string Documentation of the string to be converted.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
