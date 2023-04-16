@@ -142,6 +142,10 @@ M.close_float = function()
 end
 
 M.open_float = function(hover_text, config)
+	if not hover_text or hover_text:len() == 0 then
+		-- There is nothing to display, quit out early
+		return
+	end
 	-- Convert Doxygen comments to Markdown format
 	local tbl = M.convert_to_markdown(hover_text, config)
 	if #tbl == 0 then
