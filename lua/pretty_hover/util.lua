@@ -144,6 +144,7 @@ end
 M.open_float = function(hover_text, config)
 	if not hover_text or hover_text:len() == 0 then
 		-- There is nothing to display, quit out early
+		vim.notify("No information available", vim.log.levels.INFO)
 		return
 	end
 	-- Convert Doxygen comments to Markdown format
