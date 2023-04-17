@@ -147,10 +147,11 @@ M.open_float = function(hover_text, config)
 		vim.notify("No information available", vim.log.levels.INFO)
 		return
 	end
+
 	-- Convert Doxygen comments to Markdown format
 	local tbl = M.convert_to_markdown(hover_text, config)
 	if #tbl == 0 then
-		vim.notify("Cannot open hover")
+		vim.notify("No information available", vim.log.levels.INFO)
 		return
 	end
 
