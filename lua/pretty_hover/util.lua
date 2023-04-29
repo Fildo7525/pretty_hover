@@ -144,6 +144,7 @@ M.convert_to_markdown = function(toConvert, opts)
 	return result
 end
 
+--- Close the opened floating window.
 M.close_float = function()
 	-- Safeguard around accidentally calling close when there is no pretty_hover window open
 	if M.winnr == 0 and M.bufnr == 0 then
@@ -162,6 +163,9 @@ M.close_float = function()
 	M.bufnr = 0
 end
 
+--- Opens a floating window with the documentation transformed from doxygen to markdown.
+---@param hover_text string Text to be converted.
+---@param config table Table of options to be used for the conversion to the markdown language.
 M.open_float = function(hover_text, config)
 	if not hover_text or hover_text:len() == 0 then
 		-- There is nothing to display, quit out early

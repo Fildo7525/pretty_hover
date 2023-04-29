@@ -38,11 +38,14 @@ M.hover = function()
 	end)
 end
 
+--- Setup the plugin to use the given options.
+---@param opts table Options to be set for the plugin.
 M.setup = function(opts)
 	opts = opts or {}
 	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), opts)
 end
 
+--- Close the opened floating window.
 M.close = function()
 	h_util.close_float()
 end
