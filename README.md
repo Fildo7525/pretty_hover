@@ -71,6 +71,7 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 		"@param",
 		"@tparam",
 		"@see",
+		"@*param*", -- for lua
 	},
 	header = {
 		"@class",
@@ -78,13 +79,16 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 	return_statement = {
 		"@return",
 		"\\return",
+		"@*return*", -- for lua
 	},
 	stylers = {
-		line = "**",
-		word = "`",
-		header = "###",
+		line = '**',
+		word = '`',
+		header = '###',
 	},
 	border = "rounded",
+	max_width = nil,
+	max_height = nil,
 	max_width = nil, -- Leave nil for no restriction.
 	max_height = nil, -- Leave nil for no restriction.
 }

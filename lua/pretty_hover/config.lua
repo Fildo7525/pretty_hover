@@ -6,6 +6,7 @@ return {
 		"@param",
 		"@tparam",
 		"@see",
+		"@*param*",
 	},
 	header = {
 		"@class",
@@ -13,6 +14,7 @@ return {
 	return_statement = {
 		"@return",
 		"\\return",
+		"@*return*",
 	},
 	stylers = {
 		line = '**',
