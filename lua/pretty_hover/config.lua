@@ -10,6 +10,10 @@ return {
 	header = {
 		"@class",
 	},
+	return_statement = {
+		"@return",
+		"\\return",
+	},
 	stylers = {
 		line = '**',
 		word = '`',

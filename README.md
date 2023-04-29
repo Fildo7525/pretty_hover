@@ -75,6 +75,10 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 	header = {
 		"@class",
 	},
+	return_statement = {
+		"@return",
+		"\\return",
+	},
 	stylers = {
 		line = "**",
 		word = "`",
