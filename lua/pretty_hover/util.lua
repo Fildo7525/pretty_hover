@@ -181,6 +181,9 @@ M.open_float = function(hover_text, config)
 		focusable = true,
 		focus = true,
 		focus_id = "pretty-hover",
+		wrap_at = config.max_width,
+		max_width = config.max_width,
+		max_height = config.max_height,
 	})
 	M.bufnr = bufnr
 	M.winnr = winnr

@@ -85,6 +85,8 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 		header = "###",
 	},
 	border = "rounded",
+	max_width = nil, -- Leave nil for no restriction.
+	max_height = nil, -- Leave nil for no restriction.
 }
 ```
 

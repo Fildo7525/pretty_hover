@@ -20,5 +20,7 @@ return {
 		header = '###',
 	},
 	border = "rounded",
+	max_width = nil,
+	max_height = nil,
 }
 
