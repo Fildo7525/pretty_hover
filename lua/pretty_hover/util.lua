@@ -80,23 +80,21 @@ M.transform_line = function (line, opts, control)
 	local result = {}
 	local tbl = M.split(line)
 	local el = tbl[1]
+	local insertEmptyLine = false
 
 	if M.tbl_contains(opts.line, el) then
 		table.remove(tbl, 1)
-		line = M.joint_table(tbl, " ")
-		table.insert(result, opts.stylers.line .. line .. opts.stylers.line)
-		table.insert(result, "")
+		tbl[1] = "**" .. tbl[1]
+		tbl[#tbl] = tbl[#tbl] .. "**"
+		insertEmptyLine = true;
 
 	elseif M.tbl_contains(opts.header, el) then
-		table.remove(tbl, 1)
-		line = M.joint_table(tbl, " ")
-		table.insert(result, opts.stylers.header .. " " .. line)
-		table.insert(result, "")
+		tbl[1] = opts.stylers.header
+		insertEmptyLine = true;
 
 	elseif M.tbl_contains(opts.word, el) then
 		tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
 		table.remove(tbl, 1)
-		line = M.joint_table(tbl, " ")
 
 		if control.firstParam and el == "@param" then
 			control.firstParam = false
@@ -107,17 +105,19 @@ M.transform_line = function (line, opts, control)
 			table.insert(result, "**See**")
 		end
 
-		table.insert(result, line)
-
 	elseif M.tbl_contains(opts.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
-		table.insert(result, line)
 	elseif M.tbl_contains(opts.listing, el) then
 		tbl[1] = opts.stylers.listing
 	end
 
+	line = M.joint_table(tbl, " ")
+	table.insert(result, line)
+	if insertEmptyLine then
+		table.insert(result, "")
+	end
 	return result
 end
 
