@@ -2,6 +2,9 @@ return {
 	line = {
 		"@brief",
 	},
+	listing = {
+		"@li",
+	},
 	word = {
 		"@param",
 		"@tparam",
@@ -20,6 +23,7 @@ return {
 		line = '**',
 		word = '`',
 		header = '###',
+		listing = " - ",
 	},
 	border = "rounded",
 	max_width = nil,

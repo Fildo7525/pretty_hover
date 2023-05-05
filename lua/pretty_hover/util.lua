@@ -114,8 +114,8 @@ M.transform_line = function (line, opts, control)
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
 		table.insert(result, line)
-	else
-		table.insert(result, line)
+	elseif M.tbl_contains(opts.listing, el) then
+		tbl[1] = opts.stylers.listing
 	end
 
 	return result
