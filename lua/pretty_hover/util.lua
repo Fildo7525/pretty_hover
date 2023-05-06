@@ -60,6 +60,22 @@ M.tbl_contains = function(tbl, el)
 	return false
 end
 
+--- Converts all the references to markdown text.
+---@param tabled_line table Words to be checked.
+---@param opts table Table of options to be used for the conversion to the markdown language.
+---@return table Converted line to markdown.
+M.check_line_for_references = function (tabled_line, opts)
+	for index, word in ipairs(tabled_line) do
+		if M.tbl_contains(opts.references, word) then
+			tabled_line[index] = opts.stylers.references .. tabled_line[index+1] .. opts.stylers.references
+			table.remove(tabled_line, index + 1)
+		end
+	end
+	vim.print(tabled_line)
+
+	return tabled_line
+end
+
 --- This function checks all the active clients for current buffer and returns the active client that supports the current filetype.
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
 M.get_current_active_clent = function()
@@ -114,6 +130,7 @@ M.transform_line = function (line, opts, control)
 		tbl[1] = opts.stylers.listing
 	end
 
+	tbl = M.check_line_for_references(tbl, opts)
 	line = M.joint_table(tbl, " ")
 	table.insert(result, line)
 	if insertEmptyLine then

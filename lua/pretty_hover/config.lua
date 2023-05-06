@@ -19,11 +19,17 @@ return {
 		"\\return",
 		"@*return*",
 	},
+	references = {
+		"@ref",
+		"@c",
+		"@name",
+	},
 	stylers = {
 		line = '**',
 		word = '`',
 		header = '###',
 		listing = " - ",
+		references = "**",
 	},
 	border = "rounded",
 	max_width = nil,
