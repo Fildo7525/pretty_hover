@@ -75,9 +75,9 @@ end
 M.get_surround_string = function(tabled_line, opts)
 	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
 		vim.print(tabled_line)
-		return {true, "`"}
+		return {true, opts.stylers.references[2]}
 	else
-		return {false, opts.stylers.references}
+		return {false, opts.stylers.references[1]}
 	end
 end
 

@@ -29,7 +29,10 @@ return {
 		word = '`',
 		header = '###',
 		listing = " - ",
-		references = "**",
+		references = {
+			"**",
+			"`"
+		},
 	},
 	border = "rounded",
 	max_width = nil,
