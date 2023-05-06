@@ -60,18 +60,67 @@ M.tbl_contains = function(tbl, el)
 	return false
 end
 
+--- Detect if the check line is already bolded.
+---@param table_line table Table of words to be checked.
+---@return boolean True if the line is bolded, false otherwise.
+M.is_bold = function(table_line)
+	local last_word = table_line[#table_line]
+	return table_line[1]:find("*") == 1 and last_word:find("*") == #last_word-1
+end
+
+--- Based on the tabled_line markdown representation, this function returns the surrounding string.
+---@param tabled_line table Table of words to be checked.
+---@param opts table Table of options to be used for the conversion to the markdown language.
+---@return table The first element of the table is boolean which indicates if the string is already converted. Second element is the surrounding string.
+M.get_surround_string = function(tabled_line, opts)
+	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
+		vim.print(tabled_line)
+		return {true, "`"}
+	else
+		return {false, opts.stylers.references}
+	end
+end
+
 --- Converts all the references to markdown text.
 ---@param tabled_line table Words to be checked.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@return table Converted line to markdown.
 M.check_line_for_references = function (tabled_line, opts)
+	local surround = M.get_surround_string(tabled_line, opts)
+
 	for index, word in ipairs(tabled_line) do
 		if M.tbl_contains(opts.references, word) then
-			tabled_line[index] = opts.stylers.references .. tabled_line[index+1] .. opts.stylers.references
+			vim.print(tabled_line)
+
+			-- Remove the parantheses surrounding the reference.
+			if tabled_line[index]:sub(1,1) == "(" then
+				tabled_line[index+1] = tabled_line[index+1]:gsub("%)", "")
+			end
+
+			-- Surround the word in brief line.
+			if surround.is_brief then
+				-- End the brief line formatting if possible.
+				if tabled_line[index-1] then
+					tabled_line[index-1] = tabled_line[index-1] .. opts.stylers.line
+				end
+				-- Start the reference formatting.
+				tabled_line[index] = surround.spacer .. tabled_line[index+1]
+
+				-- End the reference formatting and start the brief line formatting if possible.
+				if tabled_line[index+2] then
+					tabled_line[index] = tabled_line[index] .. surround[2]
+					tabled_line[index+2] = opts.stylers.line .. tabled_line[index+2]
+				else
+					tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround[2]
+				end
+
+			-- Surround the word in non-brief line.
+			else
+				tabled_line[index] = surround.spacer .. tabled_line[index+1] .. surround.spacer
+			end
 			table.remove(tabled_line, index + 1)
 		end
 	end
-	vim.print(tabled_line)
 
 	return tabled_line
 end
