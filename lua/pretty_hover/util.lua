@@ -96,10 +96,11 @@ M.transform_line = function (line, opts, control)
 		tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
 		table.remove(tbl, 1)
 
-		if control.firstParam and el == "@param" then
+		if control.firstParam and el:find("[@\\]param") then
 			control.firstParam = false
 			table.insert(result, "---")
-		elseif control.firstSee and el == "@see" then
+			table.insert(result, "**Parameters**")
+		elseif control.firstSee and el:find("[@\\]see") then
 			control.firstSee = false
 			table.insert(result, "---")
 			table.insert(result, "**See**")
