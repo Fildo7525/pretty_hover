@@ -91,6 +91,7 @@ M.check_line_for_references = function (tabled_line, opts)
 	for index, word in ipairs(tabled_line) do
 		if M.tbl_contains(opts.references, word) then
 			vim.print(tabled_line)
+			-- TODO: check if the reference is a function with arguments seperated by space.
 
 			-- Remove the parantheses surrounding the reference.
 			if tabled_line[index]:sub(1,1) == "(" then
