@@ -75,9 +75,9 @@ end
 M.get_surround_string = function(tabled_line, opts)
 	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
 		vim.print(tabled_line)
-		return {true, opts.stylers.references[2]}
+		return { is_brief = true, spacer = opts.stylers.references[2]}
 	else
-		return {false, opts.stylers.references[1]}
+		return { is_brief = false, spacer = opts.stylers.references[1]}
 	end
 end
 
@@ -109,10 +109,10 @@ M.check_line_for_references = function (tabled_line, opts)
 
 				-- End the reference formatting and start the brief line formatting if possible.
 				if tabled_line[index+2] then
-					tabled_line[index] = tabled_line[index] .. surround[2]
+					tabled_line[index] = tabled_line[index] .. surround.spacer
 					tabled_line[index+2] = opts.stylers.line .. tabled_line[index+2]
 				else
-					tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround[2]
+					tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround.spacer
 				end
 
 			-- Surround the word in non-brief line.
