@@ -93,9 +93,9 @@ M.check_line_for_references = function (tabled_line, opts)
 			vim.print(tabled_line)
 			-- TODO: check if the reference is a function with arguments seperated by space.
 
-			-- Remove the parantheses surrounding the reference.
+			-- Handle the parantheses surrounding the reference.
 			if tabled_line[index]:sub(1,1) == "(" then
-				tabled_line[index+1] = tabled_line[index+1]:gsub("%)", "")
+				tabled_line[index+1] = "(" .. tabled_line[index+1]
 			end
 
 			-- Surround the word in brief line.
