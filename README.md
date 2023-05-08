@@ -84,11 +84,20 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 		"\\return",
 		"@*return*", -- for lua
 	},
+	references = {
+		"@ref",
+		"@c",
+		"@name",
+	},
 	stylers = {
 		line = '**',
 		word = '`',
 		header = '###',
 		listing = " - ",
+		references = {
+			"**", -- Used primarly in main body.
+			"`" -- Used in brief section.
+		},
 	},
 	border = "rounded",
 	max_width = nil, -- Leave nil for no restriction.
