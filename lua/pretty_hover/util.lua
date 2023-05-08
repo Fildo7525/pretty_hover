@@ -1,4 +1,5 @@
 local api = vim.api
+local ref = require("pretty_hover.references")
 
 local M = {}
 
@@ -40,97 +41,11 @@ M.joint_table = function(tbl, delim)
 	return result
 end
 
---- Check if a table contains desired element. vim.tbl_contains does not work for all cases.
----@param tbl table Table to be checked.
----@param el string Element to be checked.
----@return boolean True if the table contains the element, false otherwise.
-M.tbl_contains = function(tbl, el)
-	if not el then
-		return false
-	end
-	if not tbl then
-		return false
-	end
-
-	for _, v in pairs(tbl) do
-		if el:find(v) then
-			return true
-		end
-	end
-	return false
-end
-
---- Detect if the check line is already bolded.
----@param table_line table Table of words to be checked.
----@return boolean True if the line is bolded, false otherwise.
-M.is_bold = function(table_line)
-	local last_word = table_line[#table_line]
-	return table_line[1]:find("*") == 1 and last_word:find("*") == #last_word-1
-end
-
---- Based on the tabled_line markdown representation, this function returns the surrounding string.
----@param tabled_line table Table of words to be checked.
----@param opts table Table of options to be used for the conversion to the markdown language.
----@return table The first element of the table is boolean which indicates if the string is already converted. Second element is the surrounding string.
-M.get_surround_string = function(tabled_line, opts)
-	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
-		vim.print(tabled_line)
-		return { is_brief = true, spacer = opts.stylers.references[2]}
-	else
-		return { is_brief = false, spacer = opts.stylers.references[1]}
-	end
-end
-
---- Converts all the references to markdown text.
----@param tabled_line table Words to be checked.
----@param opts table Table of options to be used for the conversion to the markdown language.
----@return table Converted line to markdown.
-M.check_line_for_references = function (tabled_line, opts)
-	local surround = M.get_surround_string(tabled_line, opts)
-
-	for index, word in ipairs(tabled_line) do
-		if M.tbl_contains(opts.references, word) then
-			vim.print(tabled_line)
-			-- TODO: check if the reference is a function with arguments seperated by space.
-
-			-- Handle the parantheses surrounding the reference.
-			if tabled_line[index]:sub(1,1) == "(" then
-				tabled_line[index+1] = "(" .. tabled_line[index+1]
-			end
-
-			-- Surround the word in brief line.
-			if surround.is_brief then
-				-- End the brief line formatting if possible.
-				if tabled_line[index-1] then
-					tabled_line[index-1] = tabled_line[index-1] .. opts.stylers.line
-				end
-				-- Start the reference formatting.
-				tabled_line[index] = surround.spacer .. tabled_line[index+1]
-
-				-- End the reference formatting and start the brief line formatting if possible.
-				if tabled_line[index+2] then
-					tabled_line[index] = tabled_line[index] .. surround.spacer
-					tabled_line[index+2] = opts.stylers.line .. tabled_line[index+2]
-				else
-					tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround.spacer
-				end
-
-			-- Surround the word in non-brief line.
-			else
-				tabled_line[index] = surround.spacer .. tabled_line[index+1] .. surround.spacer
-			end
-			table.remove(tabled_line, index + 1)
-		end
-	end
-
-	return tabled_line
-end
-
 --- This function checks all the active clients for current buffer and returns the active client that supports the current filetype.
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
 M.get_current_active_clent = function()
 	for _, client in ipairs(vim.lsp.get_active_clients()) do
-		if M.tbl_contains(client.config.filetypes, vim.bo.filetype) then
+		if ref.tbl_contains(client.config.filetypes, vim.bo.filetype) then
 			return client
 		end
 	end
@@ -148,17 +63,17 @@ M.transform_line = function (line, opts, control)
 	local el = tbl[1]
 	local insertEmptyLine = false
 
-	if M.tbl_contains(opts.line, el) then
+	if ref.tbl_contains(opts.line, el) then
 		table.remove(tbl, 1)
 		tbl[1] = "**" .. tbl[1]
 		tbl[#tbl] = tbl[#tbl] .. "**"
 		insertEmptyLine = true;
 
-	elseif M.tbl_contains(opts.header, el) then
+	elseif ref.tbl_contains(opts.header, el) then
 		tbl[1] = opts.stylers.header
 		insertEmptyLine = true;
 
-	elseif M.tbl_contains(opts.word, el) then
+	elseif ref.tbl_contains(opts.word, el) then
 		tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
 		table.remove(tbl, 1)
 
@@ -172,15 +87,15 @@ M.transform_line = function (line, opts, control)
 			table.insert(result, "**See**")
 		end
 
-	elseif M.tbl_contains(opts.return_statement, el) then
+	elseif ref.tbl_contains(opts.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
-	elseif M.tbl_contains(opts.listing, el) then
+	elseif ref.tbl_contains(opts.listing, el) then
 		tbl[1] = opts.stylers.listing
 	end
 
-	tbl = M.check_line_for_references(tbl, opts)
+	tbl = ref.check_line_for_references(tbl, opts)
 	line = M.joint_table(tbl, " ")
 	table.insert(result, line)
 	if insertEmptyLine then
