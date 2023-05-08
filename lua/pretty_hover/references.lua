@@ -48,6 +48,11 @@ M.is_opening_reference = function(tabled_line, index)
 	return (tabled_line[index]:find("[(]") or tabled_line[index+1]:find("[(]")) and not tabled_line[index+1]:find("[)]")
 end
 
+--- Surrounds the reference from the front. If the reference is opened, it is not closed.
+---@param tabled_line table Table of strings representing current line.
+---@param index integer Index of the word to be checked.
+---@param opts table Table of options to be used for the conversion to the markdown language.
+---@param surround table Table of the surrounding strings.
 M.surround_references = function(tabled_line, index, opts, surround)
 	-- Surround the word in brief line.
 	if surround.is_brief then
@@ -84,6 +89,11 @@ M.surround_references = function(tabled_line, index, opts, surround)
 	end
 end
 
+--- Close the opened reference if it is opened.
+---@param tabled_line table Table of strings representing current line.
+---@param index integer Index of the word to be checked.
+---@param opts table Table of options to be used for the conversion to the markdown language.
+---@param surround table Table of the surrounding strings.
 M.close_opened_references = function(tabled_line, index, opts, surround)
 	if surround.openedReference and tabled_line[index]:find("[)]") then
 		if surround.is_brief then
