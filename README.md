@@ -67,6 +67,9 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 	line = {
 		"@brief",
 	},
+	listing = {
+		"@li",
+	},
 	word = {
 		"@param",
 		"@tparam",
@@ -85,10 +88,9 @@ The `stylers.header` will replace the elements in `header`. `border` is than pas
 		line = '**',
 		word = '`',
 		header = '###',
+		listing = " - ",
 	},
 	border = "rounded",
-	max_width = nil,
-	max_height = nil,
 	max_width = nil, -- Leave nil for no restriction.
 	max_height = nil, -- Leave nil for no restriction.
 }
