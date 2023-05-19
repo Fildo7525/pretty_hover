@@ -81,6 +81,10 @@ M.transform_line = function (line, opts, control)
 			control.firstParam = false
 			table.insert(result, "---")
 			table.insert(result, "**Parameters**")
+		elseif control.firstTemplate and el:find("[@\\]tparam") then
+			control.firstTemplate = false
+			table.insert(result, "---")
+			table.insert(result, "**Types**")
 		elseif control.firstSee and el:find("[@\\]see") then
 			control.firstSee = false
 			table.insert(result, "---")
@@ -113,6 +117,7 @@ M.convert_to_markdown = function(toConvert, opts)
 	local control = {
 		firstParam = true,
 		firstSee = true,
+		firstTemplate = true,
 	}
 
 	local chunks = M.split(toConvert, "([^\n]*)\n?")
