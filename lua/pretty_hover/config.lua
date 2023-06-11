@@ -1,4 +1,8 @@
 return {
+	code = {
+		start = {"[\\@]code"},
+		ending = {"[\\@]endcode"},
+	},
 	line = {
 		"@brief",
 	},
@@ -38,8 +42,18 @@ return {
 	max_width = nil,
 	max_height = nil,
 	hl = {
-		error = {"[\\@]error", "[\\@]bug", "[\\@]errors"},
-		warning = {"[\\@]warning", "[\\@]thread_safety"},
+		error = {
+			color = "#DC2626",
+			detect = {"[\\@]error", "[\\@]bug", "[\\@]errors"},
+		},
+		warning = {
+			color = "#FBBF24",
+			detect = {"[\\@]warning", "[\\@]thread_safety"},
+		},
+		--[[ info = { ]]
+		--[[ 	color = "#2563EB", ]]
+		--[[ 	detect = {"[\\@]note", "[\\@]notes"}, ]]
+		--[[ } ]]
 	},
 }
 

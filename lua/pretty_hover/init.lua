@@ -43,6 +43,7 @@ end
 M.setup = function(opts)
 	opts = opts or {}
 	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), opts)
+	require("pretty_hover.highlight").setup_colors(M.config)
 end
 
 --- Close the opened floating window.

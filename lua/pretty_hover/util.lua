@@ -1,5 +1,6 @@
 local api = vim.api
 local ref = require("pretty_hover.references")
+local hl = require("pretty_hover.highlight")
 
 local M = {}
 
@@ -74,8 +75,8 @@ M.transform_line = function (line, opts, control, hl_data)
 		tbl[1] = opts.stylers.header
 		insertEmptyLine = true;
 
-	elseif ref.tbl_contains(opts.hl.error, el) then
-		tbl[1] = string.upper(ref.find(opts.hl.error, el))
+	elseif ref.tbl_contains(opts.hl.error.detect, el) then
+		tbl[1] = string.upper(ref.find(opts.hl.error.detect, el))
 		if tbl[1]:sub(1, 2) == '@' then
 			tbl[1] = tbl[1]:sub(3)
 		else
@@ -84,8 +85,8 @@ M.transform_line = function (line, opts, control, hl_data)
 		hl_data.error = true
 		hl_data.replacement = tbl[1]
 
-	elseif ref.tbl_contains(opts.hl.warning, el) then
-		tbl[1] = string.upper(ref.find(opts.hl.warning, el))
+	elseif ref.tbl_contains(opts.hl.warning.detect, el) then
+		tbl[1] = string.upper(ref.find(opts.hl.warning.detect, el))
 		if tbl[1]:sub(1, 2) == '@' then
 			tbl[1] = tbl[1]:sub(3)
 		else
@@ -93,6 +94,15 @@ M.transform_line = function (line, opts, control, hl_data)
 		end
 		hl_data.warning = true
 		hl_data.replacement = tbl[1]
+
+	elseif ref.tbl_contains(opts.code.start, el) then
+		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
+		table.insert(result, "```" .. language)
+		table.remove(tbl, 1)
+
+	elseif ref.tbl_contains(opts.code.ending, el) then
+		table.insert(result, "```")
+		table.remove(tbl, 1)
 
 	elseif ref.tbl_contains(opts.word, el) then
 		tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
@@ -154,11 +164,17 @@ M.convert_to_markdown = function(toConvert, opts, hl_data)
 
 		if hl_data.error then
 			hl_data.error = false
-			table.insert(hl_data.lines.error, {line = #result - 2, to = string.len(hl_data.replacement)})
+			table.insert(hl_data.lines.error, {
+				line = ref.printable_table_size(result) - 2,
+				to = string.len(hl_data.replacement)
+			})
 		end
 		if hl_data.warning then
 			hl_data.warning = false
-			table.insert(hl_data.lines.warning, {line = #result - 2, to = string.len(hl_data.replacement)})
+			table.insert(hl_data.lines.warning, {
+				line = ref.printable_table_size(result) - 2,
+				to = string.len(hl_data.replacement)
+			})
 		end
 	end
 	return result
@@ -181,22 +197,6 @@ M.close_float = function()
 	api.nvim_win_close(M.winnr, true)
 	M.winnr = 0
 	M.bufnr = 0
-end
-
-M.apply_highlight = function(hl_data)
-	if M.hl_ns then
-		api.nvim_buf_clear_namespace(M.bufnr, M.hl_ns, 0, -1)
-	end
-
-	M.hl_ns = api.nvim_create_namespace("pretty_hover_ns")
-
-	for _, line in pairs(hl_data.lines.error) do
-		api.nvim_buf_add_highlight(M.bufnr, M.hl_ns, "ErrorMsg", line.line, 0, line.to);
-	end
-
-	for _, line in pairs(hl_data.lines.warning) do
-		api.nvim_buf_add_highlight(M.bufnr, M.hl_ns, "WarningMsg", line.line, 0, line.to);
-	end
 end
 
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
@@ -226,7 +226,7 @@ M.open_float = function(hover_text, config)
 		return
 	end
 
-	local bufnr, winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {
+	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {
 		border = config.border,
 		focusable = true,
 		focus = true,
@@ -235,18 +235,15 @@ M.open_float = function(hover_text, config)
 		max_width = config.max_width,
 		max_height = config.max_height,
 	})
-	M.bufnr = bufnr
-	M.winnr = winnr
 
 	vim.wo[M.winnr].foldenable = false
 	vim.bo[M.bufnr].modifiable = false
 	vim.bo[M.bufnr].bufhidden = 'wipe'
 
-	vim.print(hl_data)
-	M.apply_highlight(hl_data)
+	hl.apply_highlight(config, hl_data, M.bufnr)
 
 	vim.keymap.set('n', 'q', M.close_float, {
-		buffer = bufnr,
+		buffer = M.bufnr,
 		silent = true,
 		nowait = true,
 	})

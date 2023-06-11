@@ -20,6 +20,19 @@ M.tbl_contains = function(tbl, el)
 	return false
 end
 
+--- Count the printable strings in the table.
+---@param tbl table Table of string from hover.
+---@return number Number of printable lines.
+M.printable_table_size = function(tbl)
+	local count = 0
+	for _, el in pairs(tbl) do
+		if el and not el:gmatch("```")() then
+			count = count + 1
+		end
+	end
+	return count
+end
+
 --- Checks the table for the desired element. If the element is found, it is returned, otherwise nil is returned.
 ---@param tbl table Table to be checked.
 ---@param el string Element to be checked for.
