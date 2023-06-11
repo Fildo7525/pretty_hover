@@ -55,9 +55,10 @@ end
 --- Transforms the line from doxygen stype into markdown
 ---@param line string Line to be transformed.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
+---@param hl_data table Table of control variables to be used for the popup window highlighting.
 ---@param control table Table of control variables to be used for the conversion to the markdown language.
 -- @return table Table of strings from doxygen to markdown.
-M.transform_line = function (line, opts, control)
+M.transform_line = function (line, opts, control, hl_data)
 	local result = {}
 	local tbl = M.split(line)
 	local el = tbl[1]
@@ -72,6 +73,26 @@ M.transform_line = function (line, opts, control)
 	elseif ref.tbl_contains(opts.header, el) then
 		tbl[1] = opts.stylers.header
 		insertEmptyLine = true;
+
+	elseif ref.tbl_contains(opts.hl.error, el) then
+		tbl[1] = string.upper(ref.find(opts.hl.error, el))
+		if tbl[1]:sub(1, 2) == '@' then
+			tbl[1] = tbl[1]:sub(3)
+		else
+			tbl[1] = tbl[1]:sub(2)
+		end
+		hl_data.error = true
+		hl_data.replacement = tbl[1]
+
+	elseif ref.tbl_contains(opts.hl.warning, el) then
+		tbl[1] = string.upper(ref.find(opts.hl.warning, el))
+		if tbl[1]:sub(1, 2) == '@' then
+			tbl[1] = tbl[1]:sub(3)
+		else
+			tbl[1] = tbl[1]:sub(2)
+		end
+		hl_data.warning = true
+		hl_data.replacement = tbl[1]
 
 	elseif ref.tbl_contains(opts.word, el) then
 		tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
@@ -95,6 +116,7 @@ M.transform_line = function (line, opts, control)
 		table.insert(result, "")
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
+
 	elseif ref.tbl_contains(opts.listing, el) then
 		tbl[1] = opts.stylers.listing
 	end
@@ -111,8 +133,9 @@ end
 --- Converts a string returned by response.result.contents.value from vim.lsp[textDocument/hover] to markdown.
 ---@param toConvert string Documentation of the string to be converted.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
+---@param hl_data table Table of control variables to be used for the popup window highlighting.
 ---@return table Converted table of strings from doxygen to markdown.
-M.convert_to_markdown = function(toConvert, opts)
+M.convert_to_markdown = function(toConvert, opts, hl_data)
 	local result = {}
 	local control = {
 		firstParam = true,
@@ -125,9 +148,18 @@ M.convert_to_markdown = function(toConvert, opts)
 		return result
 	end
 
-	for _, chunk in pairs(chunks) do
-		local toAdd = M.transform_line(chunk, opts, control)
+	for idx, chunk in pairs(chunks) do
+		local toAdd = M.transform_line(chunk, opts, control, hl_data)
 		vim.list_extend(result, toAdd)
+
+		if hl_data.error then
+			hl_data.error = false
+			table.insert(hl_data.lines.error, {line = #result - 2, to = string.len(hl_data.replacement)})
+		end
+		if hl_data.warning then
+			hl_data.warning = false
+			table.insert(hl_data.lines.warning, {line = #result - 2, to = string.len(hl_data.replacement)})
+		end
 	end
 	return result
 end
@@ -151,6 +183,22 @@ M.close_float = function()
 	M.bufnr = 0
 end
 
+M.apply_highlight = function(hl_data)
+	if M.hl_ns then
+		api.nvim_buf_clear_namespace(M.bufnr, M.hl_ns, 0, -1)
+	end
+
+	M.hl_ns = api.nvim_create_namespace("pretty_hover_ns")
+
+	for _, line in pairs(hl_data.lines.error) do
+		api.nvim_buf_add_highlight(M.bufnr, M.hl_ns, "ErrorMsg", line.line, 0, line.to);
+	end
+
+	for _, line in pairs(hl_data.lines.warning) do
+		api.nvim_buf_add_highlight(M.bufnr, M.hl_ns, "WarningMsg", line.line, 0, line.to);
+	end
+end
+
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
 ---@param hover_text string Text to be converted.
 ---@param config table Table of options to be used for the conversion to the markdown language.
@@ -161,8 +209,18 @@ M.open_float = function(hover_text, config)
 		return
 	end
 
+	local hl_data = {
+		replacement = "",
+		error = false,
+		warning = false,
+		lines = {
+			error = {},
+			warning = {},
+		},
+	}
+
 	-- Convert Doxygen comments to Markdown format
-	local tbl = M.convert_to_markdown(hover_text, config)
+	local tbl = M.convert_to_markdown(hover_text, config, hl_data)
 	if #tbl == 0 then
 		vim.notify("No information available", vim.log.levels.INFO)
 		return
@@ -183,6 +241,9 @@ M.open_float = function(hover_text, config)
 	vim.wo[M.winnr].foldenable = false
 	vim.bo[M.bufnr].modifiable = false
 	vim.bo[M.bufnr].bufhidden = 'wipe'
+
+	vim.print(hl_data)
+	M.apply_highlight(hl_data)
 
 	vim.keymap.set('n', 'q', M.close_float, {
 		buffer = bufnr,

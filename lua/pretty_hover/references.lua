@@ -20,6 +20,26 @@ M.tbl_contains = function(tbl, el)
 	return false
 end
 
+--- Checks the table for the desired element. If the element is found, it is returned, otherwise nil is returned.
+---@param tbl table Table to be checked.
+---@param el string Element to be checked for.
+---@return string The element if it is found, nil otherwise.
+M.find = function(tbl, el)
+	if not el then
+		return ""
+	end
+	if not tbl then
+		return ""
+	end
+
+	for _, v in pairs(tbl) do
+		if el:find(v) then
+			return el
+		end
+	end
+	return ""
+end
+
 --- Detect if the check line is already bolded.
 ---@param table_line table Table of words to be checked.
 ---@return boolean True if the line is bolded, false otherwise.

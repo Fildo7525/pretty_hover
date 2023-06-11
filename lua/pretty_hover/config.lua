@@ -37,5 +37,9 @@ return {
 	border = "rounded",
 	max_width = nil,
 	max_height = nil,
+	hl = {
+		error = {"[\\@]error", "[\\@]bug", "[\\@]errors"},
+		warning = {"[\\@]warning", "[\\@]thread_safety"},
+	},
 }
 
