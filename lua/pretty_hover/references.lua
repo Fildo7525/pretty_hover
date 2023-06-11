@@ -45,6 +45,10 @@ end
 ---@param index integer Index of the line to be checked.
 ---@return boolean True if the reference is opening, false otherwise.
 M.is_opening_reference = function(tabled_line, index)
+	if not tabled_line or not tabled_line[index + 1] or not tabled_line[index] then
+		return false;
+	end
+
 	return (tabled_line[index]:find("[(]") or tabled_line[index+1]:find("[(]")) and not tabled_line[index+1]:find("[)]")
 end
 
@@ -80,6 +84,10 @@ M.surround_references = function(tabled_line, index, opts, surround)
 
 	-- Surround the word in non-brief line.
 	else
+		if not tabled_line or not tabled_line[index + 1] or not tabled_line[index] then
+			return;
+		end
+
 		tabled_line[index] = surround.marker .. tabled_line[index+1]
 
 		-- End the reference formatting and start the brief line formatting if possible.
