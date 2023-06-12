@@ -56,58 +56,81 @@ require("pretty_hover").close()
 
 ### Configuration
 
-| Parameter        | Description    |
+| Parameter		| Description	|
 |----------------- | -------------- |
-| line             | If one of the supplied strings is located as the first word in line the whole line is surrounded by `stylers.line`. |
-| listing          | These words will be substituted with `stylers.listing`. |
-| word             | List of strings. If this word is detected at the beginning of a line the next word is surrounded by `styles.word` |
-| header           | List of strings. If this word is detected at the beginning of a line the word is substituted by `styles.header` |
+| line			 | If one of the supplied strings is located as the first word in line the whole line is surrounded by `stylers.line`. |
+| listing		  | These words will be substituted with `stylers.listing`. |
+| word			 | List of strings. If this word is detected at the beginning of a line the next word is surrounded by `styles.word` |
+| header		   | List of strings. If this word is detected at the beginning of a line the word is substituted by `styles.header` |
 | return statement | This words are substituted with **Return** (in bold) |
-| references       | If any word from this list is detected, the next word is surrounded by `styles.references[1]`. If this word is located in `line` section the next word is surrounded by `stylers.references[2]` (see [Limitations](#limitations)) |
-| border           | Sets the border of the hover window. (none|single|double|rounded|solid|shadow). |
-| max_width        | Sets the maximum width of the window. If you don't want any limitation set to nil. |
-| max_height       | Sets the maximum hight of the window. If you don't want any limitation set to nil. |
+| references	   | If any word from this list is detected, the next word is surrounded by `styles.references[1]`. If this word is located in `line` section the next word is surrounded by `stylers.references[2]` (see [Limitations](#limitations)) |
+| hl			   | This is a table of highlighting groups. User can define new groups by specifying at least tow parameters. `color` and `detect`. Flag `line` is not mendatory, however by setting this flag you can ensure that the whole line is highlighted. When a detector from the table `detect` is found the detector is made uppercase, omits the beginning tag and gets highlighted. |
+| border		   | Sets the border of the hover window. (none|single|double|rounded|solid|shadow). |
+| max_width		| Sets the maximum width of the window. If you don't want any limitation set to nil. |
+| max_height	   | Sets the maximum hight of the window. If you don't want any limitation set to nil. |
 
 > _**NOTE**_: To really use this plugin you have to create a keymap that will call `require('pretty_hover').hover()` function.
+
+The plugin supports code blocks. By specifying `@code{cpp}` the text in popup window is highlighted with its filetype highlighter
+until the `@endcode` is hit. When the filetype is not specified in the flag `@code` the filetype from the currently opened file is used.
 
 #### Default configuration
 
 ```lua
 {
+	code = {
+		start = {"[\\@]code"},
+		ending = {"[\\@]endcode"},
+	},
 	line = {
-		"@brief",
+		"[\\@]brief",
 	},
 	listing = {
-		"@li",
+		"[\\@]li",
 	},
 	word = {
-		"@param",
-		"@tparam",
-		"@see",
-		"@*param*", -- for lua
+		"[\\@]param",
+		"[\\@]tparam",
+		"[\\@]see",
+		"[\\@]*param*", -- for lua
 	},
 	header = {
-		"@class",
+		"[\\@]class",
 	},
 	return_statement = {
-		"@return",
-		"\\return",
-		"@*return*", -- for lua
+		"[\\@]return",
+		"[\\@]*return*",
 	},
 	references = {
-		"@ref",
-		"@c",
-		"@name",
+		"[\\@]ref",
+		"[\\@]c",
+		"[\\@]name",
 	},
 	stylers = {
-		line = '**',
-		word = '`',
+		line = '**', -- Convert the whole line by using this styler.
+		word = '`', -- Mark the first word after the detector.
 		header = '###',
 		listing = " - ",
 		references = {
 			"**", -- Used primarly in main body.
 			"`" -- Used in brief section.
 		},
+	},
+	hl = {
+		error = {
+			color = "#DC2626",
+			detect = {"[\\@]error", "[\\@]bug"},
+			-- line = true, -- this parameter is not mendatory. If specified the whole line si highlighted.
+		},
+		warning = {
+			color = "#FBBF24",
+			detect = {"[\\@]warning", "[\\@]thread_safety"},
+		},
+		info = {
+			color = "#2563EB",
+			detect = {"[\\@]remark", "[\\@]note", "[\\@]notes"},
+		},
+		-- You can specify your own highlighting groups.
 	},
 	border = "rounded",
 	max_width = nil, -- Leave nil for no restriction.
@@ -119,6 +142,7 @@ require("pretty_hover").close()
 
 Currently neovim supports these markdown stylers: \`, \*, \`\`\`[language]. Unfortunately you cannot do any
 of their combination. If the support is extended there will be more options to style the pop-up window.
+Newly this plugin started supporting highlighting see the [Configuration](#configuration) for more inforamation.
 
 ### Contributing
 
