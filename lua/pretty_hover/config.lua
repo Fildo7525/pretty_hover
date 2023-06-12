@@ -4,29 +4,28 @@ return {
 		ending = {"[\\@]endcode"},
 	},
 	line = {
-		"@brief",
+		"[\\@]brief",
 	},
 	listing = {
-		"@li",
+		"[\\@]li",
 	},
 	word = {
-		"@param",
-		"@tparam",
-		"@see",
-		"@*param*",
+		"[\\@]param",
+		"[\\@]tparam",
+		"[\\@]see",
+		"[\\@]*param*",
 	},
 	header = {
-		"@class",
+		"[\\@]class",
 	},
 	return_statement = {
-		"@return",
-		"\\return",
-		"@*return*",
+		"[\\@]return",
+		"[\\@]*return*",
 	},
 	references = {
-		"@ref",
-		"@c",
-		"@name",
+		"[\\@]ref",
+		"[\\@]c",
+		"[\\@]name",
 	},
 	stylers = {
 		line = '**',
