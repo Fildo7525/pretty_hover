@@ -74,7 +74,8 @@ function M.setup_colors(opts)
 		end
 		local fg = M.is_dark(hex) and fg_light or fg_dark
 
-		vim.cmd("hi def PH" .. kw .. " guibg=NONE " .. " guifg=" .. hex .. " gui=NONE")
+		print("hi def PH" .. kw .. " guibg=NONE guifg=" .. hex .. " gui=NONE")
+		vim.cmd("hi def PH" .. kw .. " guibg=NONE  guifg=" .. hex .. " gui=NONE")
 	end
 end
 
@@ -91,9 +92,14 @@ M.apply_highlight = function(config, hl_data, bufnr)
 
 	M.hl_ns = api.nvim_create_namespace("pretty_hover_ns")
 
+	vim.print("Colorizing: ", hl_data)
 	for name, group in pairs(config.hl) do
 		for _, line in pairs(hl_data.lines[tostring(name)]) do
-			api.nvim_buf_add_highlight(bufnr, M.hl_ns, "PH"..name, line.line, 0, line.to);
+			vim.print("Colorizing: ", line, type(line))
+			if type(line) == "table" then
+				print("Colorizing PH" .. tostring(name) .." line number " .. line.line_nr .. " from begging to " .. line.to)
+				api.nvim_buf_add_highlight(bufnr, M.hl_ns, "PH"..tostring(name), line.line_nr, 0, line.to);
+			end
 		end
 	end
 end

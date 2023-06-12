@@ -37,22 +37,24 @@ return {
 			"`"
 		},
 	},
-	border = "rounded",
-	max_width = nil,
-	max_height = nil,
 	hl = {
 		error = {
 			color = "#DC2626",
-			detect = {"[\\@]error", "[\\@]bug", "[\\@]errors"},
+			detect = {"[\\@]error", "[\\@]bug"},
+			line = true,
 		},
 		warning = {
 			color = "#FBBF24",
 			detect = {"[\\@]warning", "[\\@]thread_safety"},
+			line = true,
 		},
-		--[[ info = { ]]
-		--[[ 	color = "#2563EB", ]]
-		--[[ 	detect = {"[\\@]note", "[\\@]notes"}, ]]
-		--[[ } ]]
+		info = {
+			color = "#2563EB",
+			detect = {"[\\@]remark", "[\\@]note", "[\\@]notes"},
+		}
 	},
+	border = "rounded",
+	max_width = nil,
+	max_height = nil,
 }
 
