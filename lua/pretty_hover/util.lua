@@ -73,17 +73,21 @@ M.transform_line = function (line, opts, control, hl_data)
 			else
 				tbl[1] = tbl[1]:sub(2)
 			end
-			hl_data.lines[tostring(name)] = {}
 			hl_data.lines[tostring(name)].detected = true
 			hl_data.replacement = tbl[1]
 		end
+	end
+
+	if M.brief_detected and el and not el:sub(1,2):gmatch("[\\@]")() then
+		table.insert(result, "")
+		M.brief_detected = false
 	end
 
 	if ref.tbl_contains(opts.line, el) then
 		table.remove(tbl, 1)
 		tbl[1] = "**" .. tbl[1]
 		tbl[#tbl] = tbl[#tbl] .. "**"
-		insertEmptyLine = true;
+		M.brief_detected = true
 
 	elseif ref.tbl_contains(opts.header, el) then
 		tbl[1] = opts.stylers.header
@@ -150,6 +154,10 @@ M.convert_to_markdown = function(toConvert, opts, hl_data)
 	local chunks = M.split(toConvert, "([^\n]*)\n?")
 	if #chunks == 0 then
 		return result
+	end
+
+	for name, _ in pairs(opts.hl) do
+		hl_data.lines[tostring(name)] = {}
 	end
 
 	for idx, chunk in pairs(chunks) do
