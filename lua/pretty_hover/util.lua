@@ -65,6 +65,20 @@ M.transform_line = function (line, opts, control, hl_data)
 	local el = tbl[1]
 	local insertEmptyLine = false
 
+	for name, group in pairs(opts.hl) do
+		if ref.tbl_contains(group.detect, el) then
+			tbl[1] = string.upper(ref.find(group.detect, el))
+			if tbl[1]:sub(1, 2) == '@' then
+				tbl[1] = tbl[1]:sub(3)
+			else
+				tbl[1] = tbl[1]:sub(2)
+			end
+			hl_data.lines[tostring(name)] = {}
+			hl_data.lines[tostring(name)].detected = true
+			hl_data.replacement = tbl[1]
+		end
+	end
+
 	if ref.tbl_contains(opts.line, el) then
 		table.remove(tbl, 1)
 		tbl[1] = "**" .. tbl[1]
@@ -74,26 +88,6 @@ M.transform_line = function (line, opts, control, hl_data)
 	elseif ref.tbl_contains(opts.header, el) then
 		tbl[1] = opts.stylers.header
 		insertEmptyLine = true;
-
-	elseif ref.tbl_contains(opts.hl.error.detect, el) then
-		tbl[1] = string.upper(ref.find(opts.hl.error.detect, el))
-		if tbl[1]:sub(1, 2) == '@' then
-			tbl[1] = tbl[1]:sub(3)
-		else
-			tbl[1] = tbl[1]:sub(2)
-		end
-		hl_data.error = true
-		hl_data.replacement = tbl[1]
-
-	elseif ref.tbl_contains(opts.hl.warning.detect, el) then
-		tbl[1] = string.upper(ref.find(opts.hl.warning.detect, el))
-		if tbl[1]:sub(1, 2) == '@' then
-			tbl[1] = tbl[1]:sub(3)
-		else
-			tbl[1] = tbl[1]:sub(2)
-		end
-		hl_data.warning = true
-		hl_data.replacement = tbl[1]
 
 	elseif ref.tbl_contains(opts.code.start, el) then
 		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
@@ -162,19 +156,14 @@ M.convert_to_markdown = function(toConvert, opts, hl_data)
 		local toAdd = M.transform_line(chunk, opts, control, hl_data)
 		vim.list_extend(result, toAdd)
 
-		if hl_data.error then
-			hl_data.error = false
-			table.insert(hl_data.lines.error, {
-				line = ref.printable_table_size(result) - 2,
-				to = string.len(hl_data.replacement)
-			})
-		end
-		if hl_data.warning then
-			hl_data.warning = false
-			table.insert(hl_data.lines.warning, {
-				line = ref.printable_table_size(result) - 2,
-				to = string.len(hl_data.replacement)
-			})
+		for name, group in pairs(hl_data.lines) do
+			if group.detected then
+				group.detected = false
+				table.insert(hl_data.lines[tostring(name)], {
+					line_nr = ref.printable_table_size(result) - 2,
+					to = (opts.hl[tostring(name)].line and -1 or string.len(hl_data.replacement))
+				})
+			end
 		end
 	end
 	return result
@@ -211,12 +200,7 @@ M.open_float = function(hover_text, config)
 
 	local hl_data = {
 		replacement = "",
-		error = false,
-		warning = false,
-		lines = {
-			error = {},
-			warning = {},
-		},
+		lines = {},
 	}
 
 	-- Convert Doxygen comments to Markdown format
@@ -240,6 +224,7 @@ M.open_float = function(hover_text, config)
 	vim.bo[M.bufnr].modifiable = false
 	vim.bo[M.bufnr].bufhidden = 'wipe'
 
+	vim.print("HL: ", hl_data)
 	hl.apply_highlight(config, hl_data, M.bufnr)
 
 	vim.keymap.set('n', 'q', M.close_float, {
