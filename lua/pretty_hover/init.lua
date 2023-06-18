@@ -5,7 +5,7 @@ M.config = {}
 local h_util = require("pretty_hover.util")
 
 --- Parses the response from the server and displays the hover information converted to markdown.
-M.hover = function()
+function M.hover()
 	local util = require('vim.lsp.util')
 	local params = util.make_position_params()
 
@@ -40,14 +40,14 @@ end
 
 --- Setup the plugin to use the given options.
 ---@param opts table Options to be set for the plugin.
-M.setup = function(opts)
+function M.setup(opts)
 	opts = opts or {}
 	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), opts)
 	require("pretty_hover.highlight").setup_colors(M.config)
 end
 
 --- Close the opened floating window.
-M.close = function()
+function M.close()
 	h_util.close_float()
 end
 

@@ -13,7 +13,7 @@ end
 --- Check if HEX color is dark
 ---@param hex string HEX color reprezentation
 ---@return boolean True if color is dark, false otherwise
-M.is_dark = function (hex)
+function M.is_dark(hex)
 	local r, g, b = M.hex2rgb(hex)
 	local lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
 	return lum <= 0.5
@@ -40,7 +40,6 @@ end
 --- Setup color groups for pretty_hover plugin.
 ---@param opts table Options from the config.
 function M.setup_colors(opts)
-
 	local normal = M.get_hl("Normal")
 	local fg_dark = M.is_dark(normal.foreground or "#ffffff") and normal.foreground or normal.background
 	local fg_light = M.is_dark(normal.foreground or "#ffffff") and normal.background or normal.foreground
@@ -84,7 +83,7 @@ end
 ---@param config table Table of configurations.
 ---@param hl_data table Table of control variables that were set during the conversion to markdown.
 ---@param bufnr number Buffer number of the popup window.
-M.apply_highlight = function(config, hl_data, bufnr)
+function M.apply_highlight(config, hl_data, bufnr)
 	if M.hl_ns then
 		api.nvim_buf_clear_namespace(bufnr, M.hl_ns, 0, -1)
 	end

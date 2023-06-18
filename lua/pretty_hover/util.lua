@@ -11,7 +11,7 @@ M.bufnr = 0
 ---@param toSplit string String to be split.
 ---@param separator string|nil The separator. If not defined, the separator is set to "%S+".
 ---@return table Table of strings split by the separator.
-M.split = function(toSplit, separator)
+function M.split(toSplit, separator)
 	if separator == nil then
 		separator = "%S+"
 	end
@@ -31,7 +31,7 @@ end
 ---@param tbl table Table to be joined.
 ---@param delim string Delimiter to be used.
 ---@return string Joined string.
-M.joint_table = function(tbl, delim)
+function M.joint_table(tbl, delim)
 	local result = ""
 	for idx, chunk in pairs(tbl) do
 		result = result .. chunk
@@ -44,7 +44,7 @@ end
 
 --- This function checks all the active clients for current buffer and returns the active client that supports the current filetype.
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
-M.get_current_active_clent = function()
+function M.get_current_active_clent()
 	for _, client in ipairs(vim.lsp.get_active_clients()) do
 		if ref.tbl_contains(client.config.filetypes, vim.bo.filetype) then
 			return client
@@ -59,7 +59,7 @@ end
 ---@param hl_data table Table of control variables to be used for the popup window highlighting.
 ---@param control table Table of control variables to be used for the conversion to the markdown language.
 -- @return table Table of strings from doxygen to markdown.
-M.transform_line = function (line, opts, control, hl_data)
+function M.transform_line(line, opts, control, hl_data)
 	local result = {}
 	local tbl = M.split(line)
 	local el = tbl[1]
@@ -143,7 +143,7 @@ end
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@param hl_data table Table of control variables to be used for the popup window highlighting.
 ---@return table Converted table of strings from doxygen to markdown.
-M.convert_to_markdown = function(toConvert, opts, hl_data)
+function M.convert_to_markdown(toConvert, opts, hl_data)
 	local result = {}
 	local control = {
 		firstParam = true,
@@ -178,7 +178,7 @@ M.convert_to_markdown = function(toConvert, opts, hl_data)
 end
 
 --- Close the opened floating window.
-M.close_float = function()
+function M.close_float()
 	-- Safeguard around accidentally calling close when there is no pretty_hover window open
 	if M.winnr == 0 and M.bufnr == 0 then
 		return
@@ -199,7 +199,7 @@ end
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
 ---@param hover_text string Text to be converted.
 ---@param config table Table of options to be used for the conversion to the markdown language.
-M.open_float = function(hover_text, config)
+function M.open_float(hover_text, config)
 	if not hover_text or hover_text:len() == 0 then
 		-- There is nothing to display, quit out early
 		vim.notify("No information available", vim.log.levels.INFO)

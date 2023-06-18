@@ -4,7 +4,7 @@ local M = {}
 ---@param tbl table Table to be checked.
 ---@param el string Element to be checked.
 ---@return boolean True if the table contains the element, false otherwise.
-M.tbl_contains = function(tbl, el)
+function M.tbl_contains(tbl, el)
 	if not el then
 		return false
 	end
@@ -23,7 +23,7 @@ end
 --- Count the printable strings in the table.
 ---@param tbl table Table of string from hover.
 ---@return number Number of printable lines.
-M.printable_table_size = function(tbl)
+function M.printable_table_size(tbl)
 	local count = 0
 	for _, el in pairs(tbl) do
 		if el and not el:gmatch("```")() then
@@ -37,7 +37,7 @@ end
 ---@param tbl table Table to be checked.
 ---@param el string Element to be checked for.
 ---@return string The element if it is found, nil otherwise.
-M.find = function(tbl, el)
+function M.find(tbl, el)
 	if not el then
 		return ""
 	end
@@ -56,7 +56,7 @@ end
 --- Detect if the check line is already bolded.
 ---@param table_line table Table of words to be checked.
 ---@return boolean True if the line is bolded, false otherwise.
-M.is_bold = function(table_line)
+function M.is_bold(table_line)
 	local last_word = table_line[#table_line]
 	return table_line[1]:find("*") == 1 and last_word:find("*") == #last_word-1
 end
@@ -65,7 +65,7 @@ end
 ---@param tabled_line table Table of words to be checked.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@return table The first element of the table is boolean which indicates if the string is already converted. Second element is the surrounding string.
-M.get_surround_string = function(tabled_line, opts)
+function M.get_surround_string(tabled_line, opts)
 	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
 		return { is_brief = true, marker = opts.stylers.references[2]}
 	else
@@ -77,7 +77,7 @@ end
 ---@param tabled_line table Table of strings representing current line.
 ---@param index integer Index of the line to be checked.
 ---@return boolean True if the reference is opening, false otherwise.
-M.is_opening_reference = function(tabled_line, index)
+function M.is_opening_reference(tabled_line, index)
 	if not tabled_line or not tabled_line[index + 1] or not tabled_line[index] then
 		return false;
 	end
@@ -90,7 +90,7 @@ end
 ---@param index integer Index of the word to be checked.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@param surround table Table of the surrounding strings.
-M.surround_references = function(tabled_line, index, opts, surround)
+function M.surround_references(tabled_line, index, opts, surround)
 	-- Surround the word in brief line.
 	if surround.is_brief then
 		-- End the brief line formatting if possible.
@@ -135,7 +135,7 @@ end
 ---@param index integer Index of the word to be checked.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@param surround table Table of the surrounding strings.
-M.close_opened_references = function(tabled_line, index, opts, surround)
+function M.close_opened_references(tabled_line, index, opts, surround)
 	if surround.openedReference and tabled_line[index]:find("[)]") then
 		if surround.is_brief then
 			if tabled_line[index+1] then
@@ -157,7 +157,7 @@ end
 ---@param tabled_line table Words to be checked.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
 ---@return table Converted line to markdown.
-M.check_line_for_references = function (tabled_line, opts)
+function M.check_line_for_references(tabled_line, opts)
 	local surround = M.get_surround_string(tabled_line, opts)
 	surround.openedReference = false
 
