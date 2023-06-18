@@ -1,4 +1,27 @@
-# pretty_hover
+<h1 align="center">
+pretty_hover
+</h1>
+
+<p align="center">
+<a href="https://github.com/Fildo7525/pretty_hover/stargazers">
+	<img
+		alt="Stargazers"
+		src="https://img.shields.io/github/stars/Fildo7525/pretty_hover?style=for-the-badge&logo=starship&color=fae3b0&logoColor=d9e0ee&labelColor=282a36"
+	/>
+	</a>
+	<a href="https://github.com/Fildo7525/pretty_hover/issues">
+	<img
+		alt="Issues"
+		src="https://img.shields.io/github/issues/Fildo7525/pretty_hover?style=for-the-badge&logo=gitbook&color=ddb6f2&logoColor=d9e0ee&labelColor=282a36"
+	/>
+	</a>
+	<a href="https://github.com/Fildo7525/pretty_hover/contributors">
+	<img
+		alt="Contributors"
+		src="https://img.shields.io/github/contributors/Fildo7525/pretty_hover?style=for-the-badge&logo=opensourceinitiative&color=abe9b3&logoColor=d9e0ee&labelColor=282a36"
+	/>
+	</a>
+</p>
 
 ## Table of contents
 
