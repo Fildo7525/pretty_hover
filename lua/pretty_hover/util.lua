@@ -83,27 +83,21 @@ function M.transform_line(line, opts, control, hl_data)
 		M.brief_detected = false
 	end
 
-	if ref.tbl_contains(opts.line, el) then
-		table.remove(tbl, 1)
-		tbl[1] = "**" .. tbl[1]
-		tbl[#tbl] = tbl[#tbl] .. "**"
-		M.brief_detected = true
-
-	elseif ref.tbl_contains(opts.header, el) then
-		tbl[1] = opts.stylers.header
+	if ref.tbl_contains(opts.header.detect, el) then
+		tbl[1] = opts.header.styler
 		insertEmptyLine = true;
 
-	elseif ref.tbl_contains(opts.code.start, el) then
-		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
-		table.insert(result, "```" .. language)
+	elseif ref.tbl_contains(opts.line.detect, el) then
 		table.remove(tbl, 1)
+		tbl[1] = opts.line.styler .. tbl[1]
+		tbl[#tbl] = tbl[#tbl] .. opts.line.styler
+		M.brief_detected = true
 
-	elseif ref.tbl_contains(opts.code.ending, el) then
-		table.insert(result, "```")
-		table.remove(tbl, 1)
+	elseif ref.tbl_contains(opts.listing.detect, el) then
+		tbl[1] = opts.listing.styler
 
-	elseif ref.tbl_contains(opts.word, el) then
-		tbl[2] = opts.stylers.word .. tbl[2] .. opts.stylers.word
+	elseif ref.tbl_contains(opts.word.detect, el) then
+		tbl[2] = opts.word.styler .. tbl[2] .. opts.word.styler
 		table.remove(tbl, 1)
 
 		if control.firstParam and el:find("[@\\]param") then
@@ -125,9 +119,16 @@ function M.transform_line(line, opts, control, hl_data)
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
 
-	elseif ref.tbl_contains(opts.listing, el) then
-		tbl[1] = opts.stylers.listing
+	elseif ref.tbl_contains(opts.code.start, el) then
+		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
+		table.insert(result, "```" .. language)
+		table.remove(tbl, 1)
+
+	elseif ref.tbl_contains(opts.code.ending, el) then
+		table.insert(result, "```")
+		table.remove(tbl, 1)
 	end
+
 
 	tbl = ref.check_line_for_references(tbl, opts)
 	line = M.joint_table(tbl, " ")

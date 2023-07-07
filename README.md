@@ -101,63 +101,68 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 
 ```lua
 {
+	-- Tables grouping the detected strings and using the markdown highlighters.
+	header = {
+		detect = {"[\\@]class"},
+		styler = '###',
+	},
+	line = {
+		detect = { "[\\@]brief" },
+		styler = '**',
+	},
+	listing = {
+		detect = {"[\\@]lia"},
+		styler = " - ",
+	},
+	references = {
+		detect = {
+			"[\\@]ref",
+			"[\\@]c",
+			"[\\@]name",
+		},
+		styler = { "**", "`" },
+	},
+	word = {
+		detect = {
+			"[\\@]param",
+			"[\\@]tparam",
+			"[\\@]see",
+			"[\\@]*param*", -- For lua
+		},
+		styler = "`",
+	},
+
+	-- Tables used for cleaner identification of hover segments.
 	code = {
 		start = {"[\\@]code"},
 		ending = {"[\\@]endcode"},
-	},
-	line = {
-		"[\\@]brief",
-	},
-	listing = {
-		"[\\@]li",
-	},
-	word = {
-		"[\\@]param",
-		"[\\@]tparam",
-		"[\\@]see",
-		"[\\@]*param*", -- for lua
-	},
-	header = {
-		"[\\@]class",
 	},
 	return_statement = {
 		"[\\@]return",
 		"[\\@]*return*",
 	},
-	references = {
-		"[\\@]ref",
-		"[\\@]c",
-		"[\\@]name",
-	},
-	stylers = {
-		line = '**', -- Convert the whole line by using this styler.
-		word = '`', -- Mark the first word after the detector.
-		header = '###',
-		listing = " - ",
-		references = {
-			"**", -- Used primarly in main body.
-			"`" -- Used in brief section.
-		},
-	},
+
+	-- Highlight groups used in the hover method. Feel free to define your own highlight group.
 	hl = {
 		error = {
 			color = "#DC2626",
 			detect = {"[\\@]error", "[\\@]bug"},
-			-- line = true, -- this parameter is not mendatory. If specified the whole line si highlighted.
+			line = false, -- Flag detecting if the whole line should be highlighted
 		},
 		warning = {
 			color = "#FBBF24",
-			detect = {"[\\@]warning", "[\\@]thread_safety"},
+			detect = {"[\\@]warning", "[\\@]thread_safety", "[\\@]throw"},
+			line = false,
 		},
 		info = {
 			color = "#2563EB",
 			detect = {"[\\@]remark", "[\\@]note", "[\\@]notes"},
-		},
-		-- You can specify your own highlighting groups.
+		}
 	},
+
 	border = "rounded",
-	max_width = nil, -- Leave nil for no restriction.
-	max_height = nil, -- Leave nil for no restriction.
+	max_width = nil,
+	max_height = nil,
 }
 ```
 
@@ -165,7 +170,7 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 
 Currently neovim supports these markdown stylers: \`, \*, \`\`\`[language]. Unfortunately you cannot do any
 of their combination. If the support is extended there will be more options to style the pop-up window.
-Newly this plugin started supporting highlighting see the [Configuration](#configuration) for more inforamation.
+Newly this plugin started supporting highlighting see the [Configuration](#configuration) for more information.
 
 ### Contributing
 

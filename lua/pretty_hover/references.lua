@@ -67,9 +67,9 @@ end
 ---@return table The first element of the table is boolean which indicates if the string is already converted. Second element is the surrounding string.
 function M.get_surround_string(tabled_line, opts)
 	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
-		return { is_brief = true, marker = opts.stylers.references[2]}
+		return { is_brief = true, marker = opts.references.styler[2]}
 	else
-		return { is_brief = false, marker = opts.stylers.references[1]}
+		return { is_brief = false, marker = opts.references.styler[1]}
 	end
 end
 
@@ -162,7 +162,7 @@ function M.check_line_for_references(tabled_line, opts)
 	surround.openedReference = false
 
 	for index, word in ipairs(tabled_line) do
-		if M.tbl_contains(opts.references, word) then
+		if M.tbl_contains(opts.references.detect, word) then
 			-- Handle the parantheses surrounding the reference.
 			if tabled_line[index]:sub(1,1) == "(" then
 				tabled_line[index+1] = "(" .. tabled_line[index+1]
