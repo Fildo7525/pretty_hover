@@ -95,7 +95,7 @@ function M.surround_references(tabled_line, index, opts, surround)
 	if surround.is_brief then
 		-- End the brief line formatting if possible.
 		if tabled_line[index-1] then
-			tabled_line[index-1] = tabled_line[index-1] .. opts.stylers.line
+			tabled_line[index-1] = tabled_line[index-1] .. opts.line.styler
 		end
 		-- Start the reference formatting.
 		tabled_line[index] = surround.marker .. tabled_line[index+1]
@@ -103,7 +103,7 @@ function M.surround_references(tabled_line, index, opts, surround)
 		-- End the reference formatting and start the brief line formatting if possible.
 		if tabled_line[index+2] and not surround.openedReference then
 			tabled_line[index] = tabled_line[index] .. surround.marker
-			tabled_line[index+2] = opts.stylers.line .. tabled_line[index+2]
+			tabled_line[index+2] = opts.line.styler .. tabled_line[index+2]
 
 		elseif tabled_line[index+2] then
 			-- The reference is opened so we don't add ending reference.
@@ -140,7 +140,7 @@ function M.close_opened_references(tabled_line, index, opts, surround)
 		if surround.is_brief then
 			if tabled_line[index+1] then
 				tabled_line[index] = tabled_line[index] .. surround.marker
-				tabled_line[index+1] = opts.stylers.line .. tabled_line[index+1]
+				tabled_line[index+1] = opts.line.styler .. tabled_line[index+1]
 			else
 				tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround.marker
 			end
