@@ -219,6 +219,11 @@ function M.open_float(hover_text, config)
 		return
 	end
 
+	if config.toggle and M.winnr ~= 0 then
+		M.close_float()
+		return
+	end
+
 	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {
 		border = config.border,
 		focusable = true,
