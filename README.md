@@ -111,7 +111,7 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 		styler = '**',
 	},
 	listing = {
-		detect = {"[\\@]lia"},
+		detect = {"[\\@]li"},
 		styler = " - ",
 	},
 	references = {

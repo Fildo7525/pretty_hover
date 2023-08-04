@@ -8,7 +8,7 @@ return {
 		styler = '**',
 	},
 	listing = {
-		detect = {"[\\@]lia"},
+		detect = { "[\\@]li" },
 		styler = " - ",
 	},
 	references = {
