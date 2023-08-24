@@ -4,6 +4,29 @@ M.config = {}
 
 local h_util = require("pretty_hover.util")
 
+--- Function that will be used in hover request invoked by lsp.
+---@param responses table Table of responses from the server.
+local function local_hover_request(responses)
+	for _, response in pairs(responses) do
+		if response.result and response.result.contents then
+			local contents = response.result.contents
+
+			-- We have to do this because of java. Sometimes is the value parameter split
+			-- into two chunks. Leaving the rest of the hover message as the second argument
+			-- in the received table.
+			if contents.language == "java" then
+				for _, content in pairs(contents) do
+					local hover_text = content.value or content
+					h_util.open_float(hover_text, M.config)
+				end
+			else
+				local hover_text = response.result.contents.value
+				h_util.open_float(hover_text, M.config)
+			end
+		end
+	end
+end
+
 --- Parses the response from the server and displays the hover information converted to markdown.
 function M.hover()
 	local util = require('vim.lsp.util')
@@ -16,26 +39,7 @@ function M.hover()
 		return
 	end
 
-	vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(responses)
-		for _, response in pairs(responses) do
-			if response.result and response.result.contents then
-				local contents = response.result.contents
-
-				-- We have to do this because of java. Sometimes is the value parameter split
-				-- into two chunks. Leaving the rest of the hover message as the second argument
-				-- in the received table.
-				if contents.language == "java" then
-					for _, content in pairs(contents) do
-						local hover_text = content.value or content
-						h_util.open_float(hover_text, M.config)
-					end
-				else
-					local hover_text = response.result.contents.value
-					h_util.open_float(hover_text, M.config)
-				end
-			end
-		end
-	end)
+	vim.lsp.buf_request_all(0, 'textDocument/hover', params, local_hover_request)
 end
 
 --- Setup the plugin to use the given options.
