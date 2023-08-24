@@ -60,7 +60,7 @@ Using pretty_hover
 use {
 	"Fildo7525/pretty_hover",
 	config = function()
-		require("pretty_hover").setup(options)
+		require("pretty_hover").setup({})
 	end
 }
 ```
@@ -91,6 +91,7 @@ require("pretty_hover").close()
 | border		   | Sets the border of the hover window. (none|single|double|rounded|solid|shadow). |
 | max_width		| Sets the maximum width of the window. If you don't want any limitation set to nil. |
 | max_height	   | Sets the maximum hight of the window. If you don't want any limitation set to nil. |
+| toggle	   | Flag detecting whether you want to have the hover just as a toggle window or make the popup focusable. |
 
 > _**NOTE**_: To really use this plugin you have to create a keymap that will call `require('pretty_hover').hover()` function.
 
@@ -103,7 +104,7 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 {
 	-- Tables grouping the detected strings and using the markdown highlighters.
 	header = {
-		detect = {"[\\@]class"},
+		detect = { "[\\@]class" },
 		styler = '###',
 	},
 	line = {
@@ -111,31 +112,22 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 		styler = '**',
 	},
 	listing = {
-		detect = {"[\\@]li"},
+		detect = { "[\\@]li" },
 		styler = " - ",
 	},
 	references = {
-		detect = {
-			"[\\@]ref",
-			"[\\@]c",
-			"[\\@]name",
-		},
+		detect = { "[\\@]ref", "[\\@]c", "[\\@]name" },
 		styler = { "**", "`" },
 	},
 	word = {
-		detect = {
-			"[\\@]param",
-			"[\\@]tparam",
-			"[\\@]see",
-			"[\\@]*param*", -- For lua
-		},
+		detect = { "[\\@]param", "[\\@]tparam", "[\\@]see", "[\\@]*param*" },
 		styler = "`",
 	},
 
 	-- Tables used for cleaner identification of hover segments.
 	code = {
-		start = {"[\\@]code"},
-		ending = {"[\\@]endcode"},
+		start = { "[\\@]code" },
+		ending = { "[\\@]endcode" },
 	},
 	return_statement = {
 		"[\\@]return",
@@ -146,23 +138,25 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 	hl = {
 		error = {
 			color = "#DC2626",
-			detect = {"[\\@]error", "[\\@]bug"},
+			detect = { "[\\@]error", "[\\@]bug" },
 			line = false, -- Flag detecting if the whole line should be highlighted
 		},
 		warning = {
 			color = "#FBBF24",
-			detect = {"[\\@]warning", "[\\@]thread_safety", "[\\@]throw"},
+			detect = { "[\\@]warning", "[\\@]thread_safety", "[\\@]throw" },
 			line = false,
 		},
 		info = {
 			color = "#2563EB",
-			detect = {"[\\@]remark", "[\\@]note", "[\\@]notes"},
-		}
+			detect = { "[\\@]remark", "[\\@]note", "[\\@]notes" },
+		},
+		-- Here you can setup your own highlight groups.
 	},
 
 	border = "rounded",
 	max_width = nil,
 	max_height = nil,
+	toggle = false,
 }
 ```
 

@@ -58,5 +58,6 @@ return {
 	border = "rounded",
 	max_width = nil,
 	max_height = nil,
+	toggle = false,
 }
 
