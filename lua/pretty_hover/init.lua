@@ -53,8 +53,10 @@ function M.setup(opts)
 		local id = vim.api.nvim_create_augroup("pretty_hover_augroup", {
 			clear = true,
 		})
-		vim.api.nvim_create_autocmd({"CursorMoved"}, {
-			callback = function() require("pretty_hover.util").close_float() end,
+		vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+			callback = function()
+				require("pretty_hover.util").close_float()
+			end,
 			group = id,
 		})
 	end
