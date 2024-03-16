@@ -50,7 +50,7 @@ return {
 			line = false,
 		},
 		info = {
-			color = "#2563EB",
+			color = "#4FC1FF",
 			detect = {"[\\@]remark", "[\\@]note", "[\\@]notes"},
 		}
 	},
