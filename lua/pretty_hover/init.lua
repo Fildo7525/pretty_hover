@@ -29,7 +29,7 @@ end
 
 --- Parses the response from the server and displays the hover information converted to markdown.
 function M.hover()
-	local util = require('vim.lsp.util')
+	local util = require("vim.lsp.util")
 	local params = util.make_position_params()
 
 	-- Check if the server for this filetype exists and supports hover.
@@ -39,7 +39,7 @@ function M.hover()
 		return
 	end
 
-	vim.lsp.buf_request_all(0, 'textDocument/hover', params, local_hover_request)
+	vim.lsp.buf_request_all(0, "textDocument/hover", params, local_hover_request)
 end
 
 --- Setup the plugin to use the given options.
