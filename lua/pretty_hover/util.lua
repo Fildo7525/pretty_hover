@@ -218,6 +218,24 @@ function M.close_float()
 	M.bufnr = 0
 end
 
+function M.tmp(word)
+	vim.notify("Word: " .. word, vim.log.levels.INFO)
+	local attached_buffers = vim.lsp.get_clients({name = "clangd"})[1].attached_buffers
+	local buffers = {};
+	for idx, buf in pairs(attached_buffers) do
+		table.insert(buffers, idx)
+	end
+
+	vim.notify("Buffers: " .. vim.inspect(buffers), vim.log.levels.INFO)
+	local opts = {
+		textDocument = vim.lsp.util.make_text_document_params(),
+		position = vim.lsp.util.make_position_params(),
+	}
+	opts.position.textDocument.uri = vim.uri_from_bufnr(buffers[1])
+	vim.print("Options: " .. vim.inspect(opts.position))
+	vim.lsp.buf_request_all(buffers[1], "textDocument/definition", opts.position, function(result) vim.print("Result: " .. vim.inspect(result)) end)
+end
+
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
 ---@param hover_text string Text to be converted.
 ---@param config table Table of options to be used for the conversion to the markdown language.
@@ -253,6 +271,11 @@ function M.open_float(hover_text, config)
 		wrap_at = config.max_width,
 		max_width = config.max_width,
 		max_height = config.max_height,
+	})
+
+	vim.api.nvim_buf_set_keymap(M.bufnr, 'n', 'gd', '<cmd>lua require"pretty_hover.util".tmp(vim.fn.expand("<cword>"))<CR>', {
+		noremap = true,
+		silent = true,
 	})
 
 	vim.wo[M.winnr].foldenable = false
