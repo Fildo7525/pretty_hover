@@ -21,6 +21,19 @@ local function local_hover_request(responses)
 				end
 			else
 				local hover_text = response.result.contents.value
+				-- typescript-tools.nvim workaround
+				if hover_text == nil then
+					hover_text = response.result.contents[1].value
+					for i = 2, #response.result.contents do
+						if type(response.result.contents[i]) ~= "string" then
+							vim.notify("Unexpected item type found in hover request's response.\n" ..
+								"Please report an issue on github: https://github.com/Fildo7525/pretty_hover",
+								vim.log.levels.ERROR)
+							break
+						end
+						hover_text = hover_text .. response.result.contents[i]
+					end
+				end
 				h_util.open_float(hover_text, M.config)
 			end
 		end
