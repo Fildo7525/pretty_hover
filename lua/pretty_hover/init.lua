@@ -4,19 +4,23 @@ M.config = {}
 
 local h_util = require("pretty_hover.util")
 
-local function chech_for_nil(hover_text, response)
-	if hover_text == nil then
-		hover_text = response.result.contents[1].value
-		for i = 2, #response.result.contents do
-			if type(response.result.contents[i]) ~= "string" then
-				vim.notify("Unexpected item type found in hover request's response.\n" ..
-					"Please report an issue on github: https://github.com/Fildo7525/pretty_hover",
-					vim.log.levels.ERROR)
-				break
-			end
-			hover_text = hover_text .. response.result.contents[i]
-		end
+local function parse_response_contents(contents)
+	local hover_text = contents.value
+	if hover_text ~= nil then
+		return hover_text
 	end
+	-- typescript-tools.nvim workaround
+	hover_text = contents[1].value
+	for i = 2, #contents do
+		if type(contents[i]) ~= "string" then
+			vim.notify("Unexpected item type found in hover request's response.\n" ..
+				"Please report an issue on github: https://github.com/Fildo7525/pretty_hover",
+				vim.log.levels.ERROR)
+			break
+		end
+		hover_text = hover_text .. contents[i]
+	end
+	return hover_text
 end
 
 --- Function that will be used in hover request invoked by lsp.
@@ -35,11 +39,7 @@ local function local_hover_request(responses)
 					h_util.open_float(hover_text, M.config)
 				end
 			else
-				local hover_text = response.result.contents.value
-
-				-- typescript-tools.nvim workaround
-				chech_for_nil(hover_text, response)
-
+				local hover_text = parse_response_contents(response.result.contents)
 				h_util.open_float(hover_text, M.config)
 			end
 		end
