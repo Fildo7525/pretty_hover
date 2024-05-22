@@ -10,7 +10,12 @@ local function parse_response_contents(contents)
 		return hover_text
 	end
 	-- typescript-tools.nvim workaround
-	hover_text = contents[1].value
+
+	-- Add a test in case there are no contents.
+	if not pcall(function() hover_text = contents[1].value end) then
+		return
+	end
+
 	for i = 2, #contents do
 		if type(contents[i]) ~= "string" then
 			vim.notify("Unexpected item type found in hover request's response.\n" ..
