@@ -52,7 +52,7 @@ end
 ---
 --- @return table List of active clients.
 local function get_clients()
-	if vim.fn.has("nvim-0.11.0") then
+	if vim.version().minor == 11 then
 		return vim.lsp.get_clients()
 	else
 		return vim.lsp.get_active_clients()
