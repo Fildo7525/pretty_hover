@@ -121,11 +121,11 @@ function M.surround_references(tabled_line, index, opts, surround)
 			return;
 		end
 
-		tabled_line[index] = surround.marker .. tabled_line[index+1]
+		tabled_line[index] = tabled_line[index+1] .. surround.marker
 
 		-- End the reference formatting and start the brief line formatting if possible.
 		if not surround.openedReference then
-			tabled_line[index] = tabled_line[index] .. surround.marker
+			tabled_line[index] = tabled_line[index+1] .. surround.marker
 		end
 	end
 end
@@ -139,14 +139,14 @@ function M.close_opened_references(tabled_line, index, opts, surround)
 	if surround.openedReference and tabled_line[index]:find("[)]") then
 		if surround.is_brief then
 			if tabled_line[index+1] then
-				tabled_line[index] = tabled_line[index] .. surround.marker
+				tabled_line[index+1] = tabled_line[index+1] .. surround.marker
 				tabled_line[index+1] = opts.line.styler .. tabled_line[index+1]
 			else
 				tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround.marker
 			end
 
 		else
-			tabled_line[index] = tabled_line[index] .. surround.marker
+			tabled_line[index+1] = tabled_line[index+1] .. surround.marker
 
 		end
 		surround.openedReference = false

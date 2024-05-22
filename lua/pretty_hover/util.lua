@@ -96,7 +96,7 @@ end
 -- @return table Table of strings from doxygen to markdown.
 function M.transform_line(line, opts, control, hl_data)
 	local result = {}
-	vim.print("Transofrm: ", line)
+	vim.print("\nTransofrm: ", line)
 	local tbl = M.split(line)
 	vim.print(tbl)
 	local el = tbl[1]
@@ -173,6 +173,8 @@ function M.transform_line(line, opts, control, hl_data)
 	if insertEmptyLine then
 		table.insert(result, "")
 	end
+
+	vim.print(result)
 	return result
 end
 
