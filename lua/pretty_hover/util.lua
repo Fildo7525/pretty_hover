@@ -7,28 +7,46 @@ local M = {}
 M.winnr = 0
 M.bufnr = 0
 
---- Splits a string into a table of strings.
+--- Splits a string into a table of strings. Wile preserving the indentation and inline whitespaces.
 ---@param toSplit string String to be split.
 ---@param separator string|nil The separator. If not defined, the separator is set to "%S+".
 ---@return table Table of strings split by the separator.
 function M.split(toSplit, separator)
-	local indentation = nil
 	if separator == nil then
-		indentation = string.match(toSplit, "^%s+")
 		separator = "%S+"
 	end
 
-	if toSplit == nil then
-		return {}
-	end
-
 	local chunks = {}
-	if indentation ~= nil and indentation:len() > 0 then
-		table.insert(chunks, indentation)
+	if toSplit == nil then
+		return chunks
 	end
 
+	local startsWithWhitespace = toSplit:match("^%s+")
 	for substring in toSplit:gmatch(separator) do
-		table.insert(chunks, substring)
+		local li
+		if separator ~= "([^\n]*)\n?" then
+			li = toSplit:gmatch("%s+")
+		else
+			li = nil
+		end
+
+		if startsWithWhitespace then
+			if li ~= nil then
+				local whitespace = li()
+				if whitespace ~= nil then
+					table.insert(chunks, whitespace)
+				end
+			end
+			table.insert(chunks, substring)
+		else
+			table.insert(chunks, substring)
+			if li ~= nil then
+				local whitespace = li()
+				if whitespace ~= nil then
+					table.insert(chunks, whitespace)
+				end
+			end
+		end
 	end
 	return chunks
 end
@@ -78,7 +96,9 @@ end
 -- @return table Table of strings from doxygen to markdown.
 function M.transform_line(line, opts, control, hl_data)
 	local result = {}
+	vim.print("Transofrm: ", line)
 	local tbl = M.split(line)
+	vim.print(tbl)
 	local el = tbl[1]
 	local insertEmptyLine = false
 
@@ -134,7 +154,7 @@ function M.transform_line(line, opts, control, hl_data)
 	elseif ref.tbl_contains(opts.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
-		line = M.joint_table(tbl, " ")
+		line = M.joint_table(tbl, "")
 
 	elseif ref.tbl_contains(opts.code.start, el) then
 		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
@@ -148,7 +168,7 @@ function M.transform_line(line, opts, control, hl_data)
 
 
 	tbl = ref.check_line_for_references(tbl, opts)
-	line = M.joint_table(tbl, " ")
+	line = M.joint_table(tbl, "")
 	table.insert(result, line)
 	if insertEmptyLine then
 		table.insert(result, "")
