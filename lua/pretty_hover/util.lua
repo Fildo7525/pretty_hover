@@ -7,21 +7,6 @@ local M = {}
 M.winnr = 0
 M.bufnr = 0
 
---- Returns an empty string of size of the indentation of the given string.
----@param str string String on which should the identation be calculated.
----@return string Indentation of the given string.
-local function getIndentation(str)
-	local indentation = ""
-	for i = 1, #str do
-		if str:sub(i, i) == " " then
-			indentation = indentation .. " "
-		else
-			break
-		end
-	end
-	return indentation
-end
-
 --- Splits a string into a table of strings.
 ---@param toSplit string String to be split.
 ---@param separator string|nil The separator. If not defined, the separator is set to "%S+".
@@ -29,7 +14,7 @@ end
 function M.split(toSplit, separator)
 	local indentation = nil
 	if separator == nil then
-		indentation = getIndentation(toSplit)
+		indentation = string.match(toSplit, "^%s+")
 		separator = "%S+"
 	end
 
