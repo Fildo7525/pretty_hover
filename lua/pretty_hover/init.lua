@@ -3,6 +3,7 @@ local M = {}
 M.config = {}
 
 local h_util = require("pretty_hover.util")
+local number = require("pretty_hover.number")
 
 local function parse_response_contents(contents)
 	local hover_text = contents.value
@@ -31,8 +32,10 @@ end
 --- Function that will be used in hover request invoked by lsp.
 ---@param responses table Table of responses from the server.
 local function local_hover_request(responses)
+	local wasEmpty = true
 	for _, response in pairs(responses) do
 		if response.result and response.result.contents then
+			wasEmpty = false
 			local contents = response.result.contents
 
 			-- We have to do this because of java. Sometimes is the value parameter split
@@ -48,6 +51,15 @@ local function local_hover_request(responses)
 				h_util.open_float(hover_text, M.config)
 			end
 		end
+	end
+
+	if wasEmpty then
+		local hover_text = number.get_number_representations()
+		if not hover_text then
+			return
+		end
+
+		h_util.open_float(hover_text, M.config)
 	end
 end
 
