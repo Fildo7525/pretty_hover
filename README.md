@@ -36,6 +36,9 @@ pretty_hover
 Pretty_hover is a light weight plugin that parses the hover message before opening the popup window.
 The output can be easily manipulated with. This will result in more readable hover message.
 
+Additional feature is `number conversion`. If you are tired of constantly converting some numbers to hex, octal
+or binary you can use this plugin to do it for you.
+
 ### How it looks
 
 Using native vim.lsp.buf.hover()
