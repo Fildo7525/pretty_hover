@@ -44,10 +44,20 @@ local function local_hover_request(responses)
 			if contents.language == "java" then
 				for _, content in pairs(contents) do
 					local hover_text = content.value or content
+					if not hover_text then
+						vim.notify("There is no text to be displayed", vim.log.levels.INFO)
+						return
+					end
+
 					h_util.open_float(hover_text, M.config)
 				end
 			else
 				local hover_text = parse_response_contents(response.result.contents)
+				if not hover_text then
+					vim.notify("There is no text to be displayed", vim.log.levels.INFO)
+					return
+				end
+
 				h_util.open_float(hover_text, M.config)
 			end
 		end
