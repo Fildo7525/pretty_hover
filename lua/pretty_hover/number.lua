@@ -70,9 +70,7 @@ end
 
 function M.get_number_type(num)
 	local original
-	if type(num) == 'number' then
-		original = tostring(num)
-	elseif type(num) == 'string' then
+	if type(num) == 'string' and tonumber(num) then
 		original = num
 	else
 		return nil
@@ -84,7 +82,7 @@ function M.get_number_type(num)
 		return 16
 	elseif original[2] == 'b' then
 		return 2
-	elseif original[1] == '0' then
+	elseif original[2] == 'o' then
 		return 8
 	else
 		return 10
@@ -108,6 +106,10 @@ end
 
 function M.get_number_representations()
 	local num = vim.fn.expand("<cword>");
+	if num:sub(1,1) == '-' then
+		num = num:sub(2)
+	end
+
 	local number_type = M.get_number_type(num)
 	if not number_type then
 		return
