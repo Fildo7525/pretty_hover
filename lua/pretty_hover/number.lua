@@ -1,55 +1,35 @@
 local M = {}
---
--- Function to convert a number to its binary representation
-function M.toBinary(num)
-	local bin = ""
+
+function M.toBase(num, base)
+	local baseChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	local baseStr = ""
 	local idx = 0
 	while num > 0 do
-		local rem = num % 2
-		bin = rem .. bin
-		num = math.floor(num / 2)
+		local rem = num % base
+		baseStr = baseChars:sub(rem + 1, rem + 1) .. baseStr
+		num = math.floor(num / base)
 
-		idx = idx+1
+		idx = idx + 1
 		if idx % 4 == 0 and num > 0 then
-			bin = " " .. bin
+			baseStr = " " .. baseStr
 		end
 	end
-	return bin == "" and "0" or bin
+	return baseStr == "" and "0" or baseStr
+end
+
+-- Function to convert a number to its binary representation
+function M.toBinary(num)
+	return M.toBase(num, 2)
 end
 
 -- Function to convert a number to its octal representation
 function M.toOctal(num)
-	local oct = ""
-	local idx = 0
-	while num > 0 do
-		local rem = num % 8
-		oct = rem .. oct
-		num = math.floor(num / 8)
-
-		idx = idx + 1
-		if idx % 3 == 0 and num > 0 then
-			oct = " " .. oct
-		end
-	end
-	return oct == "" and "0" or oct
+	return M.toBase(num, 8)
 end
 
 -- Function to convert a number to its hexadecimal representation
 function M.toHex(num)
-	local hex = ""
-	local hexChars = "0123456789ABCDEF"
-	local idx = 0
-	while num > 0 do
-		local rem = num % 16
-		hex = hexChars:sub(rem + 1, rem + 1) .. hex
-		num = math.floor(num / 16)
-
-		idx = idx + 1
-		if idx % 4 == 0 and num > 0 then
-			hex = " " .. hex
-		end
-	end
-	return hex == "" and "0" or hex
+	return M.toBase(num, 16)
 end
 
 function M.prettyDecimal(num)
