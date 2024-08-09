@@ -6,12 +6,17 @@ local h_util = require("pretty_hover.util")
 local number = require("pretty_hover.number")
 
 local function parse_response_contents(contents)
-	local hover_text = contents.value
+	local hover_text = contents.value;
+	-- vtsls workaround, this lsp does not contain value in the contents. It's just pure text.
+	if type(contents) == "string" then
+		hover_text = contents
+	end
+
 	if hover_text ~= nil then
 		return hover_text
 	end
-	-- typescript-tools.nvim workaround
 
+	-- typescript-tools.nvim workaround
 	-- Add a test in case there are no contents.
 	if not pcall(function() hover_text = contents[1].value end) then
 		return
