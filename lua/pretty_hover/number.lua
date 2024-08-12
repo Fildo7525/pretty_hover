@@ -1,5 +1,9 @@
 local M = {}
 
+--- Convert the input number to the specified base.
+--- @param num number Number to be converted.
+--- @param base number Base to convert the number to.
+--- @return string The number converted into specified base in a string format.
 function M.toBase(num, base)
 	local baseChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	local baseStr = ""
@@ -17,21 +21,33 @@ function M.toBase(num, base)
 	return baseStr == "" and "0" or baseStr
 end
 
--- Function to convert a number to its binary representation
+--- Function to convert a number to its binary representation
+--- @see toBase
+--- @param num number Number to be converted.
+--- @return string The number converted into binary in a string format.
 function M.toBinary(num)
 	return M.toBase(num, 2)
 end
 
--- Function to convert a number to its octal representation
+--- Function to convert a number to its octal representation
+--- @see toBase
+--- @param num number Number to be converted.
+--- @return string The number converted into octal in a string format.
 function M.toOctal(num)
 	return M.toBase(num, 8)
 end
 
--- Function to convert a number to its hexadecimal representation
+--- Function to convert a number to its hexadecimal representation
+--- @see toBase
+--- @param num number Number to be converted.
+--- @return string The number converted into hexadecimal in a string format.
 function M.toHex(num)
 	return M.toBase(num, 16)
 end
 
+--- Pretty prints the decimal number by adding spaces after every 3 digits.
+--- @param num string Number to be pretty printed.
+--- @return string The pretty printed number.
 function M.prettyDecimal(num)
 	local len = #num
 	local pretty = ""
@@ -48,6 +64,9 @@ function M.prettyDecimal(num)
 	return pretty
 end
 
+--- Get the type of the number.
+--- @param num string Number to get the type of.
+--- @return number|nil The type of the number.
 function M.get_number_type(num)
 	local original
 	if type(num) == 'string' and tonumber(num) then
@@ -69,7 +88,9 @@ function M.get_number_type(num)
 	end
 end
 
--- Function to get all representations of a number
+--- Function to get all representations of a number
+--- @param num string Number to get the representations of.
+--- @param type number Type of the number.
 function M.get_numerical_representations(num, type)
 	local tmp = tonumber(num, type)
 	if not tmp then
@@ -84,6 +105,9 @@ function M.get_numerical_representations(num, type)
 	return string.format("### Number types:\n---\nBinary: 0b%s\nOctal: 0o%s\nDecimal: %s\nHexadecimal: 0x%s\n", binary, octal, decimal, hexadecimal)
 end
 
+--- Function to get the number representations of the current word under the cursor.
+--- @see get_number_type
+--- @return string|nil The number representations of the current word under the cursor.
 function M.get_number_representations()
 	local num = vim.fn.expand("<cword>");
 	if num:sub(1,1) == '-' then
