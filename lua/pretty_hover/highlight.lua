@@ -73,7 +73,6 @@ function M.setup_colors(opts)
 		if not hex then
 			error("Todo: no color for " .. kw)
 		end
-		local fg = M.is_dark(hex) and fg_light or fg_dark
 
 		vim.cmd("hi def PH" .. kw .. " guibg=NONE  guifg=" .. hex .. " gui=NONE")
 	end
@@ -92,7 +91,7 @@ function M.apply_highlight(config, hl_data, bufnr)
 
 	M.hl_ns = api.nvim_create_namespace("pretty_hover_ns")
 
-	for name, group in pairs(config.hl) do
+	for name, _ in pairs(config.hl) do
 		if hl_data.lines[tostring(name)] then
 			for _, line in pairs(hl_data.lines[tostring(name)]) do
 				if type(line) == "table" then

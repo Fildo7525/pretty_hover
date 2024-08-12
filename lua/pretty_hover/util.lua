@@ -168,7 +168,7 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 		hl_data.lines[tostring(name)] = {}
 	end
 
-	for idx, chunk in pairs(chunks) do
+	for _, chunk in pairs(chunks) do
 		local toAdd = M.transform_line(chunk, opts, control, hl_data)
 		vim.list_extend(result, toAdd)
 
