@@ -2,7 +2,7 @@ local M = {}
 
 M.config = {}
 
-local h_util = require("pretty_hover.util")
+local h_util = require("pretty_hover.core.util")
 local number = require("pretty_hover.number")
 
 local function parse_response_contents(contents)
@@ -106,7 +106,7 @@ function M.setup(opts)
 		})
 		vim.api.nvim_create_autocmd({ "CursorMoved" }, {
 			callback = function()
-				require("pretty_hover.util").close_float()
+				require("pretty_hover.core.util").close_float()
 			end,
 			group = id,
 		})

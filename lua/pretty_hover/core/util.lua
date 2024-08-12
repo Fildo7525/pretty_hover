@@ -1,7 +1,7 @@
 local api = vim.api
 local ref = require("pretty_hover.references")
 local hl = require("pretty_hover.highlight")
-local compatibility = require("pretty_hover.compatibility")
+local compatibility = require("pretty_hover.core.compatibility")
 
 local M = {}
 

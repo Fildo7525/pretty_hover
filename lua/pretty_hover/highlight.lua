@@ -1,6 +1,6 @@
 local M = {}
 
-local compatibility = require "pretty_hover.compatibility"
+local compatibility = require "pretty_hover.core.compatibility"
 
 local api = vim.api
 
