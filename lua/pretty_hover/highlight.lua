@@ -43,6 +43,10 @@ end
 ---@param opts table Options from the config.
 function M.setup_colors(opts)
 	local normal = M.get_hl("Normal")
+	if not normal then
+		return
+	end
+
 	local fg_dark = M.is_dark(normal.foreground or "#ffffff") and normal.foreground or normal.background
 	local fg_light = M.is_dark(normal.foreground or "#ffffff") and normal.background or normal.foreground
 	fg_dark = fg_dark or "#000000"
