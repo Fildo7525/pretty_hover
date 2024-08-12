@@ -1,6 +1,7 @@
 local api = vim.api
 local ref = require("pretty_hover.references")
 local hl = require("pretty_hover.highlight")
+local compatibility = require("pretty_hover.compatibility")
 
 local M = {}
 
@@ -48,21 +49,10 @@ function M.joint_table(tbl, delim)
 	return result
 end
 
---- Function that encapsulates the changes in nvim api for getting the active clients.
----
---- @return table List of active clients.
-local function get_clients()
-	if vim.version().minor == 11 then
-		return vim.lsp.get_clients()
-	else
-		return vim.lsp.get_active_clients()
-	end
-end
-
 --- This function checks all the active clients for current buffer and returns the active client that supports the current filetype.
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
 function M.get_current_active_clent()
-	for _, client in ipairs(get_clients()) do
+	for _, client in ipairs(compatibility.get_clients()) do
 		if ref.tbl_contains(client.config.filetypes, vim.bo.filetype) then
 			return client
 		end

@@ -1,5 +1,7 @@
 local M = {}
 
+local compatibility = require "pretty_hover.compatibility"
+
 local api = vim.api
 
 --- Convert HEX color reprezentation to RGB
@@ -23,7 +25,7 @@ end
 ---@param name string Highlight group name
 ---@return table|nil Highlight group
 function M.get_hl(name)
-	local ok, hl = pcall(api.nvim_get_hl_by_name, name, true)
+	local ok, hl = pcall(compatibility.nvim_hl(), name, true)
 	if not ok then
 		return
 	end
