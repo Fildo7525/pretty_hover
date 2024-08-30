@@ -29,6 +29,9 @@ function M.split(toSplit, separator)
 	end
 
 	for substring in toSplit:gmatch(separator) do
+		if substring:sub(1, 2) == ". " then
+			substring = substring:sub(5)
+		end
 		table.insert(chunks, substring)
 	end
 	return chunks
