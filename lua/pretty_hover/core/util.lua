@@ -167,6 +167,10 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 		return result
 	end
 
+	if chunks[#chunks] == "" then
+		table.remove(chunks, #chunks)
+	end
+
 	for name, _ in pairs(opts.hl) do
 		hl_data.lines[tostring(name)] = {}
 	end
@@ -185,6 +189,11 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 			end
 		end
 	end
+
+	if #result == 3 and result[#result] == "```" then
+		result = { result[2] }
+	end
+
 	return result
 end
 
