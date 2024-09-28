@@ -41,11 +41,14 @@ or binary you can use this plugin to do it for you.
 
 ### How it looks
 
+> _**NOTE**_: The colors of the text depend on the color of your chosen colorscheme.
+These pictures are taken with colorscheme `catppuccin-mocha`
+
 Using native vim.lsp.buf.hover()
-<img src="https://user-images.githubusercontent.com/59179935/230844931-49fdd776-2bf1-4017-8f08-fe4ac900c7c8.png">
+<img src="https://github.com/user-attachments/assets/5f4bd780-8a24-44c8-8a8e-4803ae9f7ace">
 
 Using pretty_hover
-<img src="https://user-images.githubusercontent.com/59179935/230844929-fde11267-9b4f-4560-92e0-55cef8f2d457.png">
+<img src="https://github.com/user-attachments/assets/e547359e-0a82-4fac-ba75-388cdd291804">
 
 ## Installation and setup
 
