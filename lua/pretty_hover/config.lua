@@ -60,5 +60,7 @@ return {
 	max_width = nil,
 	max_height = nil,
 	toggle = false,
+
+	detect_hyperlinks = true,
 }
 

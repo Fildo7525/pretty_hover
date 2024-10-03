@@ -102,6 +102,38 @@ function M.close_opened_references(tabled_line, index, opts, surround)
 	end
 end
 
+--- Detects the HTML style hyperlinks in the line and converts them to markdown.
+---@param tabled_line table Line from the hover message split into words.
+---@param word string Word to be checked.
+---@param index integer Index of the word from the @c tabled_line to be checked.
+function M.detect_hyper_links(tabled_line, word, index)
+	if word == "\\<a" then
+		table.remove(tabled_line, index)
+
+		word = tabled_line[index]
+		local whole_link = vim.split(word, "\"", {trimempty = true})
+		local link = whole_link[2]
+
+		-- The link is not closed in the same part of the line separated by the space.
+		if word:sub(1,4) == "href" and word:match("\\</a>") then
+			local link_text = whole_link[3]:match("(%w+)\\</a>") or link
+			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
+
+		elseif word:sub(1,4) == "href" then
+			local link_text = whole_link[3]:sub(2)
+			table.remove(tabled_line, index)
+
+
+			while not tabled_line[index]:match("\\</a>") do
+				link_text = link_text .. " " .. tabled_line[index]
+				table.remove(tabled_line, index)
+			end
+			link_text = link_text .. " " .. tabled_line[index]:match("(%w+)\\</a>")
+			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
+		end
+	end
+end
+
 --- Converts all the references to markdown text.
 ---@param tabled_line table Words to be checked.
 ---@param opts table Table of options to be used for the conversion to the markdown language.
@@ -128,6 +160,9 @@ function M.check_line_for_references(tabled_line, opts)
 
 		M.close_opened_references(tabled_line, index, opts, surround)
 
+		if opts.detect_hyperlinks then
+			M.detect_hyper_links(tabled_line, word, index)
+		end
 	end
 
 	return tabled_line
