@@ -1,5 +1,4 @@
 local api = vim.api
-local ref = require("pretty_hover.references")
 local hl = require("pretty_hover.highlight")
 local compatibility = require("pretty_hover.core.compatibility")
 
@@ -7,6 +6,59 @@ local M = {}
 
 M.winnr = 0
 M.bufnr = 0
+
+--- Check if a table contains desired element. vim.tbl_contains does not work for all cases.
+---@param tbl table Table to be checked.
+---@param el string Element to be checked.
+---@return boolean True if the table contains the element, false otherwise.
+function M.tbl_contains(tbl, el)
+	if not el then
+		return false
+	end
+	if not tbl then
+		return false
+	end
+
+	for _, v in pairs(tbl) do
+		if el:find(v) then
+			return true
+		end
+	end
+	return false
+end
+
+--- Checks the table for the desired element. If the element is found, it is returned, otherwise nil is returned.
+---@param tbl table Table to be checked.
+---@param el string Element to be checked for.
+---@return string The element if it is found, nil otherwise.
+function M.find(tbl, el)
+	if not el then
+		return ""
+	end
+	if not tbl then
+		return ""
+	end
+
+	for _, v in pairs(tbl) do
+		if el:find(v) then
+			return el
+		end
+	end
+	return ""
+end
+
+--- Count the printable strings in the table.
+---@param tbl table Table of string from hover.
+---@return number Number of printable lines.
+function M.printable_table_size(tbl)
+	local count = 0
+	for _, el in pairs(tbl) do
+		if el and not el:gmatch("```")() then
+			count = count + 1
+		end
+	end
+	return count
+end
 
 --- Splits a string into a table of strings.
 ---@param toSplit string String to be split.
@@ -56,7 +108,7 @@ end
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
 function M.get_current_active_clent()
 	for _, client in ipairs(compatibility.get_clients()) do
-		if ref.tbl_contains(client.config.filetypes, vim.bo.filetype) then
+		if M.tbl_contains(client.config.filetypes, vim.bo.filetype) then
 			return client
 		end
 	end
@@ -76,8 +128,8 @@ function M.transform_line(line, opts, control, hl_data)
 	local insertEmptyLine = false
 
 	for name, group in pairs(opts.hl) do
-		if ref.tbl_contains(group.detect, el) then
-			tbl[1] = string.upper(ref.find(group.detect, el))
+		if M.tbl_contains(group.detect, el) then
+			tbl[1] = string.upper(M.find(group.detect, el))
 			if tbl[1]:sub(1, 2) == '@' then
 				tbl[1] = tbl[1]:sub(3)
 			else
@@ -93,20 +145,20 @@ function M.transform_line(line, opts, control, hl_data)
 		M.brief_detected = false
 	end
 
-	if ref.tbl_contains(opts.header.detect, el) then
+	if M.tbl_contains(opts.header.detect, el) then
 		tbl[1] = opts.header.styler
 		insertEmptyLine = true;
 
-	elseif ref.tbl_contains(opts.line.detect, el) then
+	elseif M.tbl_contains(opts.line.detect, el) then
 		table.remove(tbl, 1)
 		tbl[1] = opts.line.styler .. tbl[1]
 		tbl[#tbl] = tbl[#tbl] .. opts.line.styler
 		M.brief_detected = true
 
-	elseif ref.tbl_contains(opts.listing.detect, el) then
+	elseif M.tbl_contains(opts.listing.detect, el) then
 		tbl[1] = opts.listing.styler
 
-	elseif ref.tbl_contains(opts.word.detect, el) then
+	elseif M.tbl_contains(opts.word.detect, el) then
 		tbl[2] = opts.word.styler .. tbl[2] .. opts.word.styler
 		table.remove(tbl, 1)
 
@@ -124,22 +176,22 @@ function M.transform_line(line, opts, control, hl_data)
 			table.insert(result, "**See**")
 		end
 
-	elseif ref.tbl_contains(opts.return_statement, el) then
+	elseif M.tbl_contains(opts.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
 
-	elseif ref.tbl_contains(opts.code.start, el) then
+	elseif M.tbl_contains(opts.code.start, el) then
 		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
 		table.insert(result, "```" .. language)
 		table.remove(tbl, 1)
 
-	elseif ref.tbl_contains(opts.code.ending, el) then
+	elseif M.tbl_contains(opts.code.ending, el) then
 		table.insert(result, "```")
 		table.remove(tbl, 1)
 	end
 
-
+	local ref = require("pretty_hover.references")
 	tbl = ref.check_line_for_references(tbl, opts)
 	line = M.joint_table(tbl, " ")
 	table.insert(result, line)
@@ -167,6 +219,7 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 		return result
 	end
 
+	-- Remove footer padding. The last line is always empty.
 	if chunks[#chunks] == "" then
 		table.remove(chunks, #chunks)
 	end
@@ -183,13 +236,15 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 			if group.detected then
 				group.detected = false
 				table.insert(hl_data.lines[tostring(name)], {
-					line_nr = ref.printable_table_size(result) - 2,
+					line_nr = M.printable_table_size(result) - 2,
 					to = (opts.hl[tostring(name)].line and -1 or string.len(hl_data.replacement))
 				})
 			end
 		end
 	end
 
+	-- If the infor is only oneliner, remove the code block.
+	-- See issue #24
 	if #result == 3 and result[#result] == "```" then
 		result = { result[2] }
 	end

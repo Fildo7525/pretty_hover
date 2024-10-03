@@ -1,57 +1,6 @@
 local M = {}
 
---- Check if a table contains desired element. vim.tbl_contains does not work for all cases.
----@param tbl table Table to be checked.
----@param el string Element to be checked.
----@return boolean True if the table contains the element, false otherwise.
-function M.tbl_contains(tbl, el)
-	if not el then
-		return false
-	end
-	if not tbl then
-		return false
-	end
-
-	for _, v in pairs(tbl) do
-		if el:find(v) then
-			return true
-		end
-	end
-	return false
-end
-
---- Count the printable strings in the table.
----@param tbl table Table of string from hover.
----@return number Number of printable lines.
-function M.printable_table_size(tbl)
-	local count = 0
-	for _, el in pairs(tbl) do
-		if el and not el:gmatch("```")() then
-			count = count + 1
-		end
-	end
-	return count
-end
-
---- Checks the table for the desired element. If the element is found, it is returned, otherwise nil is returned.
----@param tbl table Table to be checked.
----@param el string Element to be checked for.
----@return string The element if it is found, nil otherwise.
-function M.find(tbl, el)
-	if not el then
-		return ""
-	end
-	if not tbl then
-		return ""
-	end
-
-	for _, v in pairs(tbl) do
-		if el:find(v) then
-			return el
-		end
-	end
-	return ""
-end
+local util = require("pretty_hover.core.util")
 
 --- Detect if the check line is already bolded.
 ---@param table_line table Table of words to be checked.
@@ -162,7 +111,7 @@ function M.check_line_for_references(tabled_line, opts)
 	surround.openedReference = false
 
 	for index, word in ipairs(tabled_line) do
-		if M.tbl_contains(opts.references.detect, word) then
+		if util.tbl_contains(opts.references.detect, word) then
 			-- Handle the parantheses surrounding the reference.
 			if tabled_line[index]:sub(1,1) == "(" then
 				tabled_line[index+1] = "(" .. tabled_line[index+1]
