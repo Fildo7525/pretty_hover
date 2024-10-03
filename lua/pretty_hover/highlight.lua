@@ -25,10 +25,7 @@ end
 ---@param name string Highlight group name
 ---@return table|nil Highlight group
 function M.get_hl(name)
-	local ok, hl = pcall(compatibility.nvim_hl(), name, true)
-	if not ok then
-		return
-	end
+	local hl = compatibility.nvim_hl(name, true)
 
 	for _, key in pairs({ "foreground", "background", "special" }) do
 		if hl[key] then
@@ -42,8 +39,11 @@ end
 --- Setup color groups for pretty_hover plugin.
 ---@param opts table Options from the config.
 function M.setup_colors(opts)
+	M.hl_ns = api.nvim_create_namespace("pretty_hover_ns")
 	local normal = M.get_hl("Normal")
+
 	if not normal then
+		vim.notify("No normal highlight group found", vim.log.levels.WARN)
 		return
 	end
 

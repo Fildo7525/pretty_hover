@@ -11,8 +11,13 @@ function M.get_clients()
 	end
 end
 
-function M.nvim_hl()
-	return vim.version().minor >= 11 and vim.api.nvim_get_hl or vim.api.nvim_get_hl_by_name
+function M.nvim_hl(name, fg)
+	if vim.version().minor >= 11 then
+		local ns = vim.api.nvim_get_namespaces()["pretty_hover_ns"]
+		return vim.api.nvim_get_hl(ns, {name = name})
+	end
+
+	return vim.api.nvim_get_hl_by_name(name, fg)
 end
 
 return M
