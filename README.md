@@ -99,8 +99,7 @@ require("pretty_hover").close()
 | max_width		| Sets the maximum width of the window. If you don't want any limitation set to nil. |
 | max_height	   | Sets the maximum height of the window. If you don't want any limitation set to nil. |
 | toggle	   | Flag detecting whether you want to have the hover just as a toggle window or make the popup focusable. |
-| detect_hyperlinks | Flag detecting whether you want to detect hyperlinks in the hover window. This feature is experimental
-and can be disabled by setting the flag to false. |
+| detect_hyperlinks | Flag detecting whether you want to detect hyperlinks in the hover window. This feature is experimental and can be disabled by setting the flag to false. |
 
 > _**NOTE**_: To really use this plugin you have to create a keymap that calls `require('pretty_hover').hover()` function.
 
