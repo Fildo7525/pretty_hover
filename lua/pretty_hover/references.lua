@@ -119,17 +119,20 @@ function M.detect_hyper_links(tabled_line, word, index)
 			local link_text = whole_link[3]:match("(%w+)\\</a>") or link
 			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
 
+		-- The link is closed in the next part of the line.
 		elseif word:sub(1,4) == "href" then
 			local link_text = whole_link[3]:sub(2)
 			table.remove(tabled_line, index)
 
+			-- Accumulate all the words until the closing tag.
 			while not tabled_line[index]:match("\\</a>") do
 				link_text = link_text .. " " .. tabled_line[index]
 				table.remove(tabled_line, index)
 			end
 
-			local final_link = tabled_line[index]:match("(%w+)\\</a>") or ""
-			link_text = link_text .. " " .. final_link
+			-- The last word may be a space or just the closing tag.
+			local final_word = tabled_line[index]:match("(%w+)\\</a>") or ""
+			link_text = link_text .. " " .. final_word
 			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
 		end
 	end
