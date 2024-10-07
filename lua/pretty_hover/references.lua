@@ -123,12 +123,13 @@ function M.detect_hyper_links(tabled_line, word, index)
 			local link_text = whole_link[3]:sub(2)
 			table.remove(tabled_line, index)
 
-
 			while not tabled_line[index]:match("\\</a>") do
 				link_text = link_text .. " " .. tabled_line[index]
 				table.remove(tabled_line, index)
 			end
-			link_text = link_text .. " " .. tabled_line[index]:match("(%w+)\\</a>")
+
+			local final_link = tabled_line[index]:match("(%w+)\\</a>") or ""
+			link_text = link_text .. " " .. final_link
 			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
 		end
 	end
