@@ -117,17 +117,17 @@ end
 
 --- Transforms the line from doxygen stype into markdown
 ---@param line string Line to be transformed.
----@param opts table Table of options to be used for the conversion to the markdown language.
+---@param config table Table of options to be used for the conversion to the markdown language.
 ---@param hl_data table Table of control variables to be used for the popup window highlighting.
 ---@param control table Table of control variables to be used for the conversion to the markdown language.
 -- @return table Table of strings from doxygen to markdown.
-function M.transform_line(line, opts, control, hl_data)
+function M.transform_line(line, config, control, hl_data)
 	local result = {}
 	local tbl = M.split(line)
 	local el = tbl[1]
 	local insertEmptyLine = false
 
-	for name, group in pairs(opts.hl) do
+	for name, group in pairs(config.hl) do
 		if M.tbl_contains(group.detect, el) then
 			tbl[1] = string.upper(M.find(group.detect, el))
 			if tbl[1]:sub(1, 2) == '@' then
@@ -145,21 +145,21 @@ function M.transform_line(line, opts, control, hl_data)
 		M.brief_detected = false
 	end
 
-	if M.tbl_contains(opts.header.detect, el) then
-		tbl[1] = opts.header.styler
+	if M.tbl_contains(config.header.detect, el) then
+		tbl[1] = config.header.styler
 		insertEmptyLine = true;
 
-	elseif M.tbl_contains(opts.line.detect, el) then
+	elseif M.tbl_contains(config.line.detect, el) then
 		table.remove(tbl, 1)
-		tbl[1] = opts.line.styler .. tbl[1]
-		tbl[#tbl] = tbl[#tbl] .. opts.line.styler
+		tbl[1] = config.line.styler .. tbl[1]
+		tbl[#tbl] = tbl[#tbl] .. config.line.styler
 		M.brief_detected = true
 
-	elseif M.tbl_contains(opts.listing.detect, el) then
-		tbl[1] = opts.listing.styler
+	elseif M.tbl_contains(config.listing.detect, el) then
+		tbl[1] = config.listing.styler
 
-	elseif M.tbl_contains(opts.word.detect, el) then
-		tbl[2] = opts.word.styler .. tbl[2] .. opts.word.styler
+	elseif M.tbl_contains(config.word.detect, el) then
+		tbl[2] = config.word.styler .. tbl[2] .. config.word.styler
 		table.remove(tbl, 1)
 
 		if control.firstParam and el:find("[@\\]param") then
@@ -176,23 +176,23 @@ function M.transform_line(line, opts, control, hl_data)
 			table.insert(result, "**See**")
 		end
 
-	elseif M.tbl_contains(opts.return_statement, el) then
+	elseif M.tbl_contains(config.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
 		line = M.joint_table(tbl, " ")
 
-	elseif M.tbl_contains(opts.code.start, el) then
+	elseif M.tbl_contains(config.code.start, el) then
 		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
 		table.insert(result, "```" .. language)
 		table.remove(tbl, 1)
 
-	elseif M.tbl_contains(opts.code.ending, el) then
+	elseif M.tbl_contains(config.code.ending, el) then
 		table.insert(result, "```")
 		table.remove(tbl, 1)
 	end
 
 	local ref = require("pretty_hover.references")
-	tbl = ref.check_line_for_references(tbl, opts)
+	tbl = ref.check_line_for_references(tbl, config)
 	line = M.joint_table(tbl, " ")
 	table.insert(result, line)
 	if insertEmptyLine then
@@ -203,10 +203,10 @@ end
 
 --- Converts a string returned by response.result.contents.value from vim.lsp[textDocument/hover] to markdown.
 ---@param toConvert string Documentation of the string to be converted.
----@param opts table Table of options to be used for the conversion to the markdown language.
+---@param config table Table of options to be used for the conversion to the markdown language.
 ---@param hl_data table Table of control variables to be used for the popup window highlighting.
 ---@return table Converted table of strings from doxygen to markdown.
-function M.convert_to_markdown(toConvert, opts, hl_data)
+function M.convert_to_markdown(toConvert, config, hl_data)
 	local result = {}
 	local control = {
 		firstParam = true,
@@ -224,12 +224,12 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 		table.remove(chunks, #chunks)
 	end
 
-	for name, _ in pairs(opts.hl) do
+	for name, _ in pairs(config.hl) do
 		hl_data.lines[tostring(name)] = {}
 	end
 
 	for _, chunk in pairs(chunks) do
-		local toAdd = M.transform_line(chunk, opts, control, hl_data)
+		local toAdd = M.transform_line(chunk, config, control, hl_data)
 		vim.list_extend(result, toAdd)
 
 		for name, group in pairs(hl_data.lines) do
@@ -237,7 +237,7 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 				group.detected = false
 				table.insert(hl_data.lines[tostring(name)], {
 					line_nr = M.printable_table_size(result) - 2,
-					to = (opts.hl[tostring(name)].line and -1 or string.len(hl_data.replacement))
+					to = (config.hl[tostring(name)].line and -1 or string.len(hl_data.replacement))
 				})
 			end
 		end

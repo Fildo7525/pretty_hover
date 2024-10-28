@@ -96,10 +96,10 @@ function M.hover()
 end
 
 --- Setup the plugin to use the given options.
----@param opts table Options to be set for the plugin.
-function M.setup(opts)
-	opts = opts or {}
-	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), opts)
+---@param config table Options to be set for the plugin.
+function M.setup(config)
+	config = config or {}
+	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), config)
 	require("pretty_hover.highlight").setup_colors(M.config)
 
 	if M.config.toggle then

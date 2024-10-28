@@ -12,13 +12,13 @@ end
 
 --- Based on the tabled_line markdown representation, this function returns the surrounding string.
 ---@param tabled_line table Table of words to be checked.
----@param opts table Table of options to be used for the conversion to the markdown language.
+---@param config table Table of options to be used for the conversion to the markdown language.
 ---@return table The first element of the table is boolean which indicates if the string is already converted. Second element is the surrounding string.
-function M.get_surround_string(tabled_line, opts)
+function M.get_surround_string(tabled_line, config)
 	if tabled_line and #tabled_line > 0 and M.is_bold(tabled_line) then
-		return { is_brief = true, marker = opts.references.styler[2]}
+		return { is_brief = true, marker = config.references.styler[2]}
 	else
-		return { is_brief = false, marker = opts.references.styler[1]}
+		return { is_brief = false, marker = config.references.styler[1]}
 	end
 end
 
@@ -37,14 +37,14 @@ end
 --- Surrounds the reference from the front. If the reference is opened, it is not closed.
 ---@param tabled_line table Table of strings representing current line.
 ---@param index integer Index of the word to be checked.
----@param opts table Table of options to be used for the conversion to the markdown language.
+---@param config table Table of options to be used for the conversion to the markdown language.
 ---@param surround table Table of the surrounding strings.
-function M.surround_references(tabled_line, index, opts, surround)
+function M.surround_references(tabled_line, index, config, surround)
 	-- Surround the word in brief line.
 	if surround.is_brief then
 		-- End the brief line formatting if possible.
 		if tabled_line[index-1] then
-			tabled_line[index-1] = tabled_line[index-1] .. opts.line.styler
+			tabled_line[index-1] = tabled_line[index-1] .. config.line.styler
 		end
 		-- Start the reference formatting.
 		tabled_line[index] = surround.marker .. tabled_line[index+1]
@@ -52,7 +52,7 @@ function M.surround_references(tabled_line, index, opts, surround)
 		-- End the reference formatting and start the brief line formatting if possible.
 		if tabled_line[index+2] and not surround.openedReference then
 			tabled_line[index] = tabled_line[index] .. surround.marker
-			tabled_line[index+2] = opts.line.styler .. tabled_line[index+2]
+			tabled_line[index+2] = config.line.styler .. tabled_line[index+2]
 
 		elseif tabled_line[index+2] then
 			-- The reference is opened so we don't add ending reference.
@@ -82,14 +82,14 @@ end
 --- Close the opened reference if it is opened.
 ---@param tabled_line table Table of strings representing current line.
 ---@param index integer Index of the word to be checked.
----@param opts table Table of options to be used for the conversion to the markdown language.
+---@param config table Table of options to be used for the conversion to the markdown language.
 ---@param surround table Table of the surrounding strings.
-function M.close_opened_references(tabled_line, index, opts, surround)
+function M.close_opened_references(tabled_line, index, config, surround)
 	if surround.openedReference and tabled_line[index]:find("[)]") then
 		if surround.is_brief then
 			if tabled_line[index+1] then
 				tabled_line[index] = tabled_line[index] .. surround.marker
-				tabled_line[index+1] = opts.line.styler .. tabled_line[index+1]
+				tabled_line[index+1] = config.line.styler .. tabled_line[index+1]
 			else
 				tabled_line[index] = string.sub(tabled_line[index], 1, #tabled_line[index]-2) .. surround.marker
 			end
@@ -140,14 +140,14 @@ end
 
 --- Converts all the references to markdown text.
 ---@param tabled_line table Words to be checked.
----@param opts table Table of options to be used for the conversion to the markdown language.
+---@param config table Table of options to be used for the conversion to the markdown language.
 ---@return table Converted line to markdown.
-function M.check_line_for_references(tabled_line, opts)
-	local surround = M.get_surround_string(tabled_line, opts)
+function M.check_line_for_references(tabled_line, config)
+	local surround = M.get_surround_string(tabled_line, config)
 	surround.openedReference = false
 
 	for index, word in ipairs(tabled_line) do
-		if util.tbl_contains(opts.references.detect, word) then
+		if util.tbl_contains(config.references.detect, word) then
 			-- Handle the parantheses surrounding the reference.
 			if tabled_line[index]:sub(1,1) == "(" then
 				tabled_line[index+1] = "(" .. tabled_line[index+1]
@@ -157,14 +157,14 @@ function M.check_line_for_references(tabled_line, opts)
 				surround.openedReference = true
 			end
 
-			M.surround_references(tabled_line, index, opts, surround)
+			M.surround_references(tabled_line, index, config, surround)
 
 			table.remove(tabled_line, index + 1)
 		end
 
-		M.close_opened_references(tabled_line, index, opts, surround)
+		M.close_opened_references(tabled_line, index, config, surround)
 
-		if opts.detect_hyperlinks then
+		if config.detect_hyperlinks then
 			M.detect_hyper_links(tabled_line, word, index)
 		end
 	end

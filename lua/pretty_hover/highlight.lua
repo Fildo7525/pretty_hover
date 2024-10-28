@@ -37,8 +37,8 @@ function M.get_hl(name)
 end
 
 --- Setup color groups for pretty_hover plugin.
----@param opts table Options from the config.
-function M.setup_colors(opts)
+---@param config table Options from the config.
+function M.setup_colors(config)
 	M.hl_ns = api.nvim_create_namespace("pretty_hover_ns")
 	local normal = M.get_hl("Normal")
 
@@ -52,7 +52,7 @@ function M.setup_colors(opts)
 	fg_dark = fg_dark or "#000000"
 	fg_light = fg_light or "#ffffff"
 
-	for kw, hl_groups in pairs(opts.hl) do
+	for kw, hl_groups in pairs(config.hl) do
 		local kw_color = hl_groups.color or "default"
 		local hex
 
