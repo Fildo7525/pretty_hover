@@ -4,16 +4,16 @@ local compatibility = require "pretty_hover.core.compatibility"
 
 local api = vim.api
 
---- Convert HEX color reprezentation to RGB
----@param hex string HEX color reprezentation
----@return number|nil, number|nil, number|nil # RGB color reprezentation
+--- Convert HEX color representation to RGB
+---@param hex string HEX color representation
+---@return number|nil, number|nil, number|nil # RGB color representation
 function M.hex2rgb(hex)
 	hex = hex:gsub("#", "")
 	return tonumber("0x" .. hex:sub(1, 2)), tonumber("0x" .. hex:sub(3, 4)), tonumber("0x" .. hex:sub(5, 6))
 end
 
 --- Check if HEX color is dark
----@param hex string HEX color reprezentation
+---@param hex string HEX color representation
 ---@return boolean True if color is dark, false otherwise
 function M.is_dark(hex)
 	local r, g, b = M.hex2rgb(hex)
@@ -83,11 +83,11 @@ function M.setup_colors(config)
 end
 
 --- Applies the highlight to the lines of the opened floating window.
---- The used groups are ErrorMsg and WarningMsg. For the propper highlighting, the
+--- The used groups are ErrorMsg and WarningMsg. For the proper highlighting, the
 --- highlight groups must be defined.
 ---@param config table Table of configurations.
 ---@param hl_data table Table of control variables that were set during the conversion to markdown.
----@param bufnr number Buffer number of the popup window.
+---@param bufnr number Buffer number of the pop-up window.
 function M.apply_highlight(config, hl_data, bufnr)
 	if M.hl_ns then
 		api.nvim_buf_clear_namespace(bufnr, M.hl_ns, 0, -1)

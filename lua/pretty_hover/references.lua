@@ -2,9 +2,9 @@ local M = {}
 
 local util = require("pretty_hover.core.util")
 
---- Detect if the check line is already bolded.
+--- Detect if the check line is already in bold.
 ---@param table_line table Table of words to be checked.
----@return boolean True if the line is bolded, false otherwise.
+---@return boolean True if the line style is bold, false otherwise.
 function M.is_bold(table_line)
 	local last_word = table_line[#table_line]
 	return table_line[1]:find("*") == 1 and last_word:find("*") == #last_word-1
@@ -148,7 +148,7 @@ function M.check_line_for_references(tabled_line, config)
 
 	for index, word in ipairs(tabled_line) do
 		if util.tbl_contains(config.references.detect, word) then
-			-- Handle the parantheses surrounding the reference.
+			-- Handle the parenthesis surrounding the reference.
 			if tabled_line[index]:sub(1,1) == "(" then
 				tabled_line[index+1] = "(" .. tabled_line[index+1]
 			end

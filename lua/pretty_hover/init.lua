@@ -83,7 +83,7 @@ function M.hover()
 	local util = require("vim.lsp.util")
 	local params = util.make_position_params()
 
-	-- Check if the server for this filetype exists and supports hover.
+	-- Check if the server for this file type exists and supports hover.
 	local client = h_util.get_current_active_clent()
 	local hover_support_present = client and client.capabilities.textDocument.hover
 

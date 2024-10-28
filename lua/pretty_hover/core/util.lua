@@ -89,7 +89,7 @@ function M.split(toSplit, separator)
 	return chunks
 end
 
---- Join the elemnets of a table into a string with a delimiter.
+--- Join the elements of a table into a string with a delimiter.
 ---@param tbl table Table to be joined.
 ---@param delim string Delimiter to be used.
 ---@return string Joined string.
@@ -104,7 +104,7 @@ function M.joint_table(tbl, delim)
 	return result
 end
 
---- This function checks all the active clients for current buffer and returns the active client that supports the current filetype.
+--- This function checks all the active clients for current buffer and returns the active client that supports the current file type.
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
 function M.get_current_active_clent()
 	for _, client in ipairs(compatibility.get_clients()) do
@@ -115,10 +115,10 @@ function M.get_current_active_clent()
 	return nil
 end
 
---- Transforms the line from doxygen stype into markdown
+--- Transforms the line from doxygen type into markdown
 ---@param line string Line to be transformed.
 ---@param config table Table of options to be used for the conversion to the markdown language.
----@param hl_data table Table of control variables to be used for the popup window highlighting.
+---@param hl_data table Table of control variables to be used for the pop-up window highlighting.
 ---@param control table Table of control variables to be used for the conversion to the markdown language.
 -- @return table Table of strings from doxygen to markdown.
 function M.transform_line(line, config, control, hl_data)
@@ -204,7 +204,7 @@ end
 --- Converts a string returned by response.result.contents.value from vim.lsp[textDocument/hover] to markdown.
 ---@param toConvert string Documentation of the string to be converted.
 ---@param config table Table of options to be used for the conversion to the markdown language.
----@param hl_data table Table of control variables to be used for the popup window highlighting.
+---@param hl_data table Table of control variables to be used for the pop-up window highlighting.
 ---@return table Converted table of strings from doxygen to markdown.
 function M.convert_to_markdown(toConvert, config, hl_data)
 	local result = {}
@@ -243,7 +243,7 @@ function M.convert_to_markdown(toConvert, config, hl_data)
 		end
 	end
 
-	-- If the infor is only oneliner, remove the code block.
+	-- If the message is only one-liner, remove the code block.
 	-- See issue #24
 	if #result == 3 and result[#result] == "```" then
 		result = { result[2] }
@@ -259,7 +259,7 @@ function M.close_float()
 		return
 	end
 
-	-- Befor closing the window, check if it is still valid.
+	-- Before closing the window, check if it is still valid.
 	if not api.nvim_win_is_valid(M.winnr) then
 		M.winnr = 0
 		M.bufnr = 0
