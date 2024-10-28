@@ -247,6 +247,7 @@ function M.convert_to_markdown(toConvert, opts, hl_data)
 	-- See issue #24
 	if #result == 3 and result[#result] == "```" then
 		result = { result[2] }
+		opts.one_liner = true
 	end
 
 	return result
@@ -298,7 +299,12 @@ function M.open_float(hover_text, config)
 		return
 	end
 
-	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(tbl, 'markdown', {
+	local language = 'markdown'
+	if config.one_liner then
+		language = vim.bo.filetype
+	end
+
+	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(tbl, language, {
 		border = config.border,
 		focusable = true,
 		focus = true,
