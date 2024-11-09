@@ -88,7 +88,7 @@ function M.hover()
 	local hover_support_present = client and client.capabilities.textDocument.hover
 
 	if not client or not hover_support_present then
-		vim.notify("There is no client for this filetype or the client does not support the hvoer capability.", vim.log.levels.WARN)
+		vim.notify("There is no client for this filetype or the client does not support the hover capability.", vim.log.levels.WARN)
 		return
 	end
 
