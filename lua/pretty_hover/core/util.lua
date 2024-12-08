@@ -66,6 +66,8 @@ end
 ---@return table Table of strings split by the separator.
 function M.split(toSplit, separator)
 	local indentation = nil
+	local text_start_detected = false
+
 	if separator == nil then
 		indentation = string.match(toSplit, "^%s+")
 		separator = "%S+"
@@ -81,11 +83,26 @@ function M.split(toSplit, separator)
 	end
 
 	for substring in toSplit:gmatch(separator) do
+		-- These both cases are here because of python server. Some servers have '.... ' in front of every line and some
+		-- servers surround the whole message with '```text' and '```'. This is a workaround for that.
 		if substring:sub(1, 2) == ". " then
 			substring = substring:sub(5)
 		end
+
+		if substring == "```text" then
+			text_start_detected = true
+			goto continue
+		end
+
 		table.insert(chunks, substring)
+		::continue::
 	end
+
+	-- If text start is detected (```text), remove the previoius to the last element.
+	if text_start_detected then
+		chunks[#chunks-2] = " "
+	end
+
 	return chunks
 end
 
