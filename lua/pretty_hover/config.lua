@@ -22,11 +22,10 @@ return {
 	},
 	word = {
 		detect = {
-			"[\\@]param",
-			"[\\@]tparam",
-			"[\\@]see",
-			"[\\@]*param*",
-		  "[\\@]retval",
+			["Parameters"] = { "[\\@]param", "[\\@]*param*" },
+			["Types"] = { "[\\@]tparam" },
+			["See"] = { "[\\@]see" },
+			["Return Value"] = { "[\\@]retval" },
 		},
 		styler = "`",
 	},

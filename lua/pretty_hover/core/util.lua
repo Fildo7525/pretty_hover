@@ -175,28 +175,6 @@ function M.transform_line(line, config, control, hl_data)
 	elseif M.tbl_contains(config.listing.detect, el) then
 		tbl[1] = config.listing.styler
 
-	elseif M.tbl_contains(config.word.detect, el) then
-		tbl[2] = config.word.styler .. tbl[2] .. config.word.styler
-		table.remove(tbl, 1)
-
-		if control.firstParam and el:find("[@\\]param") then
-			control.firstParam = false
-			table.insert(result, "---")
-			table.insert(result, "**Parameters**")
-		elseif control.firstTemplate and el:find("[@\\]tparam") then
-			control.firstTemplate = false
-			table.insert(result, "---")
-			table.insert(result, "**Types**")
-		elseif control.firstSee and el:find("[@\\]see") then
-			control.firstSee = false
-			table.insert(result, "---")
-			table.insert(result, "**See**")
-		elseif control.firstRetVal and el:find("[@\\]retval") then
-			control.firstRetVal = false
-			table.insert(result, "---")
-			table.insert(result, "**Return Values**")
-		end
-
 	elseif M.tbl_contains(config.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
@@ -210,6 +188,19 @@ function M.transform_line(line, config, control, hl_data)
 	elseif M.tbl_contains(config.code.ending, el) then
 		table.insert(result, "```")
 		table.remove(tbl, 1)
+	end
+
+	for name, group in pairs(config.word.detect) do
+		if group and M.tbl_contains(group, el) then
+			tbl[2] = config.word.styler .. tbl[2] .. config.word.styler
+			table.remove(tbl, 1)
+
+			if control[name] then
+				control[tostring(name)] = false
+				table.insert(result, "---")
+				table.insert(result, "**" .. name .. "**")
+			end
+		end
 	end
 
 	local ref = require("pretty_hover.references")
@@ -230,12 +221,11 @@ end
 function M.convert_to_markdown(toConvert, config, hl_data)
 	config.one_liner = false
 	local result = {}
-	local control = {
-		firstParam = true,
-		firstSee = true,
-		firstTemplate = true,
-		firstRetVal = true,
-	}
+
+	local control = {}
+	for name, group in pairs(config.word.detect) do
+		control[tostring(name)] = true
+	end
 
 	local chunks = M.split(toConvert, "([^\n]*)\n?")
 	if #chunks == 0 then
