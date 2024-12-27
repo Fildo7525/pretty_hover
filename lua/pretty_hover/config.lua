@@ -26,6 +26,7 @@ return {
 			"[\\@]tparam",
 			"[\\@]see",
 			"[\\@]*param*",
+		  "[\\@]retval",
 		},
 		styler = "`",
 	},
