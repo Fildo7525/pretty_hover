@@ -191,6 +191,10 @@ function M.transform_line(line, config, control, hl_data)
 			control.firstSee = false
 			table.insert(result, "---")
 			table.insert(result, "**See**")
+		elseif control.firstRetVal and el:find("[@\\]retval") then
+			control.firstRetVal = false
+			table.insert(result, "---")
+			table.insert(result, "**Return Values**")
 		end
 
 	elseif M.tbl_contains(config.return_statement, el) then
@@ -230,6 +234,7 @@ function M.convert_to_markdown(toConvert, config, hl_data)
 		firstParam = true,
 		firstSee = true,
 		firstTemplate = true,
+		firstRetVal = true,
 	}
 
 	local chunks = M.split(toConvert, "([^\n]*)\n?")
