@@ -127,7 +127,7 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 		detect = { "[\\@]ref", "[\\@]c", "[\\@]name" },
 		styler = { "**", "`" },
 	},
-	word = {
+	group = {
 		detect = {
 			-- ["Group name"] = {"detectors"}
 			["Parameters"] = { "[\\@]param", "[\\@]*param*" },

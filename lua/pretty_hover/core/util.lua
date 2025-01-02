@@ -190,9 +190,9 @@ function M.transform_line(line, config, control, hl_data)
 		table.remove(tbl, 1)
 	end
 
-	for name, group in pairs(config.word.detect) do
+	for name, group in pairs(config.group.detect) do
 		if group and M.tbl_contains(group, el) then
-			tbl[2] = config.word.styler .. tbl[2] .. config.word.styler
+			tbl[2] = config.group.styler .. tbl[2] .. config.group.styler
 			table.remove(tbl, 1)
 
 			if control[name] then
@@ -223,7 +223,7 @@ function M.convert_to_markdown(toConvert, config, hl_data)
 	local result = {}
 
 	local control = {}
-	for name, group in pairs(config.word.detect) do
+	for name, group in pairs(config.group.detect) do
 		control[tostring(name)] = true
 	end
 

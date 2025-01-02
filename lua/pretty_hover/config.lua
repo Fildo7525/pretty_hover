@@ -20,7 +20,7 @@ return {
 		},
 		styler = { "**", "`" },
 	},
-	word = {
+	group = {
 		detect = {
 			["Parameters"] = { "[\\@]param", "[\\@]*param*" },
 			["Types"] = { "[\\@]tparam" },
