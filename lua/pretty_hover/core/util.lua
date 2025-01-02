@@ -110,7 +110,7 @@ end
 ---@param tbl table Table to be joined.
 ---@param delim string Delimiter to be used.
 ---@return string Joined string.
-function M.joint_table(tbl, delim)
+function M.join_table(tbl, delim)
 	local result = ""
 	for idx, chunk in pairs(tbl) do
 		result = result .. chunk
@@ -178,7 +178,7 @@ function M.transform_line(line, config, control, hl_data)
 	elseif M.tbl_contains(config.return_statement, el) then
 		table.insert(result, "")
 		tbl[1] = "**Return**"
-		line = M.joint_table(tbl, " ")
+		line = M.join_table(tbl, " ")
 
 	elseif M.tbl_contains(config.code.start, el) then
 		local language = el:gmatch("{(%w+)}")() or vim.o.filetype
@@ -205,7 +205,7 @@ function M.transform_line(line, config, control, hl_data)
 
 	local ref = require("pretty_hover.references")
 	tbl = ref.check_line_for_references(tbl, config)
-	line = M.joint_table(tbl, " ")
+	line = M.join_table(tbl, " ")
 	table.insert(result, line)
 	if insertEmptyLine then
 		table.insert(result, "")
