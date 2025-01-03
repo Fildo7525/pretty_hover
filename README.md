@@ -88,10 +88,10 @@ require("pretty_hover").close()
 
 | Parameter		| Description	|
 |----------------- | -------------- |
-| line			 | If one of the supplied strings is located as the first word in the line the whole line is surrounded by `stylers.line`. |
+| line			 | If one of the supplied strings is located as the first word in the line the whole line is surrounded by `line.styler`. |
 | listing		  | These words will be substituted with `stylers.listing`. |
-| group			 | Table containing group name and its detectors. If this word is detected at the beginning of a line the next word is surrounded by `styles.word`. The whole group is separated by an line and the first line containing es the group name. |
-| header		   | List of strings. If this word is detected at the beginning of a line the word is substituted by `styles.header` |
+| group			 | Table containing group name and its detectors. If this word is detected at the beginning of a line the next word is surrounded by `group.styler`. The whole group is separated by an line and the first line containing es the group name. |
+| header		   | List of strings. If this word is detected at the beginning of a line the word is substituted by `header.styler` |
 | return statement | This words are substituted with **Return** (in bold) |
 | references	   | If any word from this list is detected, the next word is surrounded by `styles.references[1]`. If this word is located in `line` section the next word is surrounded by `stylers.references[2]` (see [Limitations](#limitations)) |
 | hl			   | This is a table of highlighting groups. You can define new groups by specifying at least two parameters. `color` and `detect`. Flag `line` is not mandatory, however by setting this flag you can ensure that the whole line is highlighted. When a detector from the table `detect` is found the detector is made uppercase, omits the beginning tag and gets highlighted. |
