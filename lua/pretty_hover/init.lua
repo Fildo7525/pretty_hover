@@ -81,7 +81,7 @@ end
 --- Parses the response from the server and displays the hover information converted to markdown.
 function M.hover()
 	local util = require("vim.lsp.util")
-	local params = util.make_position_params()
+	local params = util.make_position_params(0, 'utf-16')
 
 	-- Check if the server for this file type exists and supports hover.
 	local client = h_util.get_current_active_clent()

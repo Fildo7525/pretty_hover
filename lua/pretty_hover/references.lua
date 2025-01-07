@@ -163,10 +163,7 @@ function M.check_line_for_references(tabled_line, config)
 		end
 
 		M.close_opened_references(tabled_line, index, config, surround)
-
-		if config.detect_hyperlinks then
-			M.detect_hyper_links(tabled_line, word, index)
-		end
+		M.detect_hyper_links(tabled_line, word, index)
 	end
 
 	return tabled_line
