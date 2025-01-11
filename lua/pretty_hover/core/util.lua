@@ -1,8 +1,230 @@
 local api = vim.api
 local hl = require("pretty_hover.highlight")
 local compatibility = require("pretty_hover.core.compatibility")
+local ms = require('vim.lsp.protocol').Methods
 
 local M = {}
+
+local function on_clients_finished(client_opts, method, callback, pre_ececute_callback, post_execute_callback)
+	local clients = vim.lsp.get_clients(client_opts)
+	local util = require('vim.lsp.util')
+	local remaining = #clients
+	local all_items = {}
+
+	local function on_response(_, result, client)
+		local locations = {}
+		if result then
+			locations = vim.islist(result) and result or { result }
+		end
+		local items = util.locations_to_items(locations, client.offset_encoding)
+		vim.list_extend(all_items, items)
+		remaining = remaining - 1
+		if remaining == 0 then
+			callback(all_items)
+		end
+	end
+
+	pre_ececute_callback()
+
+	for _, client in ipairs(clients) do
+		local params = util.make_position_params(api.nvim_get_current_win(), client.offset_encoding)
+		vim.print("Params: " .. vim.inspect(params))
+		client:request(method, params, function(_, result)
+			on_response(_, result, client)
+		end)
+	end
+
+	post_execute_callback()
+end
+
+local function popup_definition_handler(all_items, method, opts, tagname, from, win)
+	if vim.tbl_isempty(all_items) then
+		vim.notify('No locations found', vim.log.levels.INFO)
+		return
+	end
+
+	vim.print("All items: " .. vim.inspect(all_items))
+
+	local title = 'LSP locations'
+	if opts.on_list then
+		assert(vim.is_callable(opts.on_list), 'on_list is not a function')
+		opts.on_list({
+			title = title,
+			items = all_items,
+			context = { bufnr = M.original_buffer, method = method },
+		})
+		return
+	end
+
+	if #all_items == 1 then
+		local item = all_items[1]
+		local b = item.bufnr or vim.fn.bufadd(item.filename)
+
+		-- Save position in jumplist
+		vim.cmd("normal! m'")
+		-- Push a new item into tagstack
+		local tagstack = { { tagname = tagname, from = from } }
+		vim.fn.settagstack(vim.fn.win_getid(win), { items = tagstack }, 't')
+
+		vim.bo[b].buflisted = true
+		local w = opts.reuse_win and vim.fn.win_findbuf(b)[1] or win
+		api.nvim_win_set_buf(w, b)
+		api.nvim_win_set_cursor(w, { item.lnum, item.col - 1 })
+		vim._with({ win = w }, function()
+			-- Open folds under the cursor
+			vim.cmd('normal! zv')
+		end)
+		return
+	end
+
+	if opts.loclist then
+		vim.fn.setloclist(0, {}, ' ', { title = title, items = all_items })
+		vim.cmd.lopen()
+	else
+		vim.fn.setqflist({}, ' ', { title = title, items = all_items })
+		vim.cmd('botright copen')
+	end
+end
+
+--- @class vim.lsp.ListOpts
+---
+--- list-handler replacing the default handler.
+--- Called for any non-empty result.
+--- This table can be used with |setqflist()| or |setloclist()|. E.g.:
+--- ```lua
+--- local function on_list(options)
+---   vim.fn.setqflist({}, ' ', options)
+---   vim.cmd.cfirst()
+--- end
+---
+--- vim.lsp.buf.definition({ on_list = on_list })
+--- vim.lsp.buf.references(nil, { on_list = on_list })
+--- ```
+---
+--- If you prefer loclist instead of qflist:
+--- ```lua
+--- vim.lsp.buf.definition({ loclist = true })
+--- vim.lsp.buf.references(nil, { loclist = true })
+--- ```
+--- @field on_list? fun(t: vim.lsp.LocationOpts.OnList)
+--- @field loclist? boolean
+
+--- @class vim.lsp.LocationOpts.OnList
+--- @field items table[] Structured like |setqflist-what|
+--- @field title? string Title for the list.
+--- @field context? table `ctx` from |lsp-handler|
+
+--- @class vim.lsp.LocationOpts: vim.lsp.ListOpts
+---
+--- Jump to existing window if buffer is already open.
+--- @field reuse_win? boolean
+
+--- Jumps to the declaration of the symbol under the cursor.
+--- @note Many servers do not implement this method. Generally, see |vim.lsp.buf.definition()| instead.
+--- @param opts? vim.lsp.LocationOpts
+--- @param cword? string
+function M.definition(opts, cword)
+	opts = opts or {}
+	local method = ms.textDocument_definition
+	local util = require('vim.lsp.util')
+	--- @type vim.lsp.Client[]
+	local clients = vim.lsp.get_clients({ method = method, bufnr = M.original_buffer })
+	if not next(clients) then
+		vim.notify(vim.lsp._unsupported_method(method), vim.log.levels.WARN)
+		return
+	end
+
+	local win = M.original_win --api.nvim_get_current_win()
+	local from = vim.fn.getpos('.')
+	from[1] = M.bufnr
+	local tagname = vim.fn.expand('<cword>')
+	local remaining = #clients
+
+	local all_items = {}
+
+	local function on_response(_, result, client)
+		vim.print(result)
+		local locations = {}
+		if result then
+			locations = vim.islist(result) and result or { result }
+		end
+		local items = util.locations_to_items(locations, client.offset_encoding)
+		vim.list_extend(all_items, items)
+		remaining = remaining - 1
+		if remaining == 0 then
+			if vim.tbl_isempty(all_items) then
+				vim.notify('No locations found', vim.log.levels.INFO)
+				return
+			end
+
+			vim.print("All items: " .. vim.inspect(all_items))
+
+			local title = 'LSP locations'
+			if opts.on_list then
+				assert(vim.is_callable(opts.on_list), 'on_list is not a function')
+				opts.on_list({
+					title = title,
+					items = all_items,
+					context = { bufnr = M.original_buffer, method = method },
+				})
+				return
+			end
+
+			if #all_items == 1 then
+				local item = all_items[1]
+				local b = item.bufnr or vim.fn.bufadd(item.filename)
+
+				-- Save position in jumplist
+				vim.cmd("normal! m'")
+				-- Push a new item into tagstack
+				local tagstack = { { tagname = tagname, from = from } }
+				vim.fn.settagstack(vim.fn.win_getid(win), { items = tagstack }, 't')
+
+				vim.bo[b].buflisted = true
+				local w = opts.reuse_win and vim.fn.win_findbuf(b)[1] or win
+				api.nvim_win_set_buf(w, b)
+				api.nvim_win_set_cursor(w, { item.lnum, item.col - 1 })
+				vim._with({ win = w }, function()
+					-- Open folds under the cursor
+					vim.cmd('normal! zv')
+				end)
+				return
+			end
+
+			if opts.loclist then
+				vim.fn.setloclist(0, {}, ' ', { title = title, items = all_items })
+				vim.cmd.lopen()
+			else
+				vim.fn.setqflist({}, ' ', { title = title, items = all_items })
+				vim.cmd('botright copen')
+			end
+		end
+	end
+
+	-- TODO: This variable is the filepath of the buffer that containes the definition of the word on which the hower was
+	-- called.
+	local cword_definition_file = ""
+	client:request(method, params, function(_, result)
+	end)
+	local cword_bufnr = vim.fn.bufadd(cword_definition_file)
+
+	for _, client in ipairs(clients) do
+		-- XXX: The issue is here. We do not have a uri for the popup window. The hack would be to calculate the position of
+		-- the word in the text document. That is however impossible to do. Firstly, we change the whole buffer. Secondly,
+		-- the server alters the text document. The numbers would not correspont either way.
+		local params = util.make_position_params(api.nvim_get_current_win(), client.offset_encoding)
+		vim.print("Params: " .. vim.inspect(params))
+		client:request(method, params, function(_, result)
+			on_response(_, result, client)
+		end)
+	end
+
+	-- Remove the temporarily loaded buffer.
+	-- TODO: Do it only in case that it was loaded in this function. Otherwise, it might be a buffer that was already loaded
+	-- and we do not want to remove it.
+	vim.cmd.bd(cword_bufnr)
+end
+
 
 M.winnr = 0
 M.bufnr = 0
@@ -283,6 +505,7 @@ function M.close_float()
 	api.nvim_win_close(M.winnr, true)
 	M.winnr = 0
 	M.bufnr = 0
+	M.original_buffer = 0
 end
 
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
@@ -317,6 +540,8 @@ function M.open_float(hover_text, config)
 		language = vim.bo.filetype
 	end
 
+	M.original_buffer = vim.api.nvim_get_current_buf()
+	M.original_win = api.nvim_get_current_win()
 	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(tbl, language, {
 		border = config.border,
 		focusable = true,
@@ -330,6 +555,12 @@ function M.open_float(hover_text, config)
 	vim.wo[M.winnr].foldenable = false
 	vim.bo[M.bufnr].modifiable = false
 	vim.bo[M.bufnr].bufhidden = 'wipe'
+
+
+	vim.api.nvim_buf_set_keymap(M.bufnr, 'n', 'gd', '<cmd>lua require("pretty_hover.core.util").definition()<CR>', {
+		noremap = true,
+		silent = true,
+	})
 
 	hl.apply_highlight(config, hl_data, M.bufnr)
 
