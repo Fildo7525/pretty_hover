@@ -120,4 +120,8 @@ function M.close()
 	h_util.close_float()
 end
 
+function M.get_config()
+	return M.config
+end
+
 return M
