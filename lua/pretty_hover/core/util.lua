@@ -2,7 +2,12 @@ local api = vim.api
 local hl = require("pretty_hover.highlight")
 local compatibility = require("pretty_hover.core.compatibility")
 
-local M = {}
+local M = {
+	brief = {
+		detected = false,
+		option = "",
+	},
+}
 
 M.winnr = 0
 M.bufnr = 0
@@ -140,6 +145,10 @@ end
 -- @return table Table of strings from doxygen to markdown.
 function M.transform_line(line, config, control, hl_data)
 	local result = {}
+
+	-- Some servers add whitespaces infornt of some rows.
+	line = line:gsub("^%s+", "")
+
 	local tbl = M.split(line)
 	local el = tbl[1]
 	local insertEmptyLine = false
@@ -157,9 +166,17 @@ function M.transform_line(line, config, control, hl_data)
 		end
 	end
 
-	if M.brief_detected and el and not el:sub(1,2):gmatch("[\\@]")() then
-		table.insert(result, "")
-		M.brief_detected = false
+	-- Either end the brief line or extend it to the next line.
+	if M.brief.detected and el and not el:sub(1,2):gmatch("[\\@]")() then
+		if M.brief.option == "continue" then
+			table.insert(result, "")
+			M.brief.detected = false
+
+		elseif M.brief.option == "start" then
+			tbl[1] = config.line.styler .. tbl[1]
+			tbl[#tbl] = tbl[#tbl] .. config.line.styler
+			M.brief.detected = false
+		end
 	end
 
 	if M.tbl_contains(config.header.detect, el) then
@@ -168,9 +185,16 @@ function M.transform_line(line, config, control, hl_data)
 
 	elseif M.tbl_contains(config.line.detect, el) then
 		table.remove(tbl, 1)
-		tbl[1] = config.line.styler .. tbl[1]
-		tbl[#tbl] = tbl[#tbl] .. config.line.styler
-		M.brief_detected = true
+		M.brief.detected = true
+
+		if #tbl == 0 then
+			M.brief.option = "start"
+
+		else
+			tbl[1] = config.line.styler .. (tbl[1] or "")
+			tbl[#tbl] = tbl[#tbl] .. config.line.styler
+			M.brief.option = "continue"
+		end
 
 	elseif M.tbl_contains(config.listing.detect, el) then
 		tbl[1] = config.listing.styler
