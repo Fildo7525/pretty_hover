@@ -142,7 +142,7 @@ end
 ---@param config table Table of options to be used for the conversion to the markdown language.
 ---@param hl_data table Table of control variables to be used for the pop-up window highlighting.
 ---@param control table Table of control variables to be used for the conversion to the markdown language.
--- @return table Table of strings from doxygen to markdown.
+---@return table Table of strings from doxygen to markdown.
 function M.transform_line(line, config, control, hl_data)
 	local result = {}
 
