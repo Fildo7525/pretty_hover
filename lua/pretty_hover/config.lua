@@ -57,6 +57,7 @@ return {
 	},
 
 	border = "rounded",
+	wrap = true,
 	max_width = nil,
 	max_height = nil,
 	toggle = false,

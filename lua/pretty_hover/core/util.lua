@@ -346,7 +346,7 @@ function M.open_float(hover_text, config)
 		focusable = true,
 		focus = true,
 		focus_id = "pretty-hover",
-		wrap = config.max_width and config.max_width > 0 or false,
+		wrap = config.wrap,
 		wrap_at = config.max_width and config.max_width - 2 or nil,
 		max_width = config.max_width,
 		max_height = config.max_height,

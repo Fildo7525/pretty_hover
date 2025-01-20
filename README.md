@@ -96,6 +96,8 @@ require("pretty_hover").close()
 | references	   | If any word from this list is detected, the next word is surrounded by `references.styler[1]`. If this word is located in `line` section the next word is surrounded by `references.styler[2]` (see [Limitations](#limitations)) |
 | hl			   | This is a table of highlighting groups. You can define new groups by specifying at least two parameters. `color` and `detect`. Flag `line` is not mandatory, however by setting this flag you can ensure that the whole line is highlighted. When a detector from the table `detect` is found the detector is made uppercase, omits the beginning tag and gets highlighted. |
 | border		   | Sets the border of the hover window. (none \| single \| double \| rounded \| solid \| shadow). |
+| wrap			| Flag whether to wrap the text if the window is smaller. Otherwise the floating window is scrollable
+horizontally |
 | max_width		| Sets the maximum width of the window. If you don't want any limitation set to nil. |
 | max_height	   | Sets the maximum height of the window. If you don't want any limitation set to nil. |
 | toggle	   | Flag detecting whether you want to have the hover just as a toggle window or make the popup focusable. |
@@ -167,6 +169,7 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 	},
 
 	border = "rounded",
+	wrap = true,
 	max_width = nil,
 	max_height = nil,
 	toggle = false,
