@@ -161,14 +161,9 @@ function M.open_float(hover_text, config)
 		return
 	end
 
-	local hl_data = {
-		replacement = "",
-		lines = {},
-	}
-
 	-- Convert Doxygen comments to Markdown format
-	local tbl = require("pretty_hover.parser.parser").convert_to_markdown(hover_text, config, hl_data)
-	if #tbl == 0 then
+	local out = require("pretty_hover.parser").parse(hover_text)
+	if #out.text == 0 then
 		vim.notify("No information available", vim.log.levels.INFO)
 		return
 	end
@@ -183,7 +178,7 @@ function M.open_float(hover_text, config)
 		language = vim.bo.filetype
 	end
 
-	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(tbl, language, {
+	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(out.text, language, {
 		border = config.border,
 		focusable = true,
 		focus = true,
@@ -198,7 +193,7 @@ function M.open_float(hover_text, config)
 	vim.bo[M.bufnr].modifiable = false
 	vim.bo[M.bufnr].bufhidden = 'wipe'
 
-	hl.apply_highlight(config, hl_data, M.bufnr)
+	hl.apply_highlight(config, out.highlighting, M.bufnr)
 
 	vim.keymap.set('n', 'q', M.close_float, {
 		buffer = M.bufnr,
