@@ -28,6 +28,7 @@ pretty_hover
  - [How it looks](#how-it-looks)
  - [Installation and setup](#installation-and-setup)
  - [Configuration](#configuration)
+ - [Integration](#integration)
  - [Default config](#default-configuration)
  - [Limitations](#limitations)
  - [Contributing](#contributing)
@@ -175,6 +176,19 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 	toggle = false,
 }
 ```
+
+### Integration
+
+The plugin supports an easy integration:
+
+```lua
+local parsed = require("pretty_hover.parser").parse(text)
+```
+
+the parsed variable contains two fields `text` and `highlight`. The `text` field contains the converted text to markdown
+and the `highlight` field contains the highlight groups for the text.
+
+To see an example implementation see the `pretty_hover/examples/parsing.lua` file.
 
 ### Limitations
 
