@@ -116,7 +116,7 @@ function M.detect_hyper_links(tabled_line, word, index)
 
 		-- The link is not closed in the same part of the line separated by the space.
 		if word:sub(1,4) == "href" and word:match("\\</a>") then
-			local link_text = whole_link[3]:match("(%w+)\\</a>") or link
+			local link_text = whole_link[3]:match("([%w_]+)\\</a>") or link
 			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
 
 		-- The link is closed in the next part of the line.
