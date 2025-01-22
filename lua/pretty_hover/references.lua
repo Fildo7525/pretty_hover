@@ -171,6 +171,9 @@ function M.check_line_for_references(tabled_line, config)
 
 		M.close_opened_references(tabled_line, index, config, surround)
 		M.detect_hyper_links(tabled_line, word, index)
+
+		-- We cannot use `word` because it will change also the hyperlinks.
+		tabled_line[index] = tabled_line[index]:gsub("\\(<%w+)", "%1")
 	end
 
 	return tabled_line
