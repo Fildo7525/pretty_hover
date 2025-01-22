@@ -128,28 +128,28 @@ function M.convert_to_markdown(toConvert, config, hl_data)
 		control[tostring(name)] = true
 	end
 
-	local chunks = {}
+	local lines = {}
 	if type(toConvert) == "string" then
-		chunks = util.split(toConvert, "([^\n]*)\n?")
+		lines = util.split(toConvert, "([^\n]*)\n?")
 	elseif type(toConvert) == "table" then
-		chunks = toConvert
+		lines = toConvert
 	end
 
-	if #chunks == 0 then
+	if #lines == 0 then
 		return result
 	end
 
 	-- Remove footer padding. The last line is always empty.
-	if chunks[#chunks] == "" then
-		table.remove(chunks, #chunks)
+	if lines[#lines] == "" then
+		table.remove(lines, #lines)
 	end
 
 	for name, _ in pairs(config.hl) do
 		hl_data.lines[tostring(name)] = {}
 	end
 
-	for _, chunk in pairs(chunks) do
-		local toAdd = M.transform_line(chunk, config, control, hl_data)
+	for _, line in pairs(lines) do
+		local toAdd = M.transform_line(line, config, control, hl_data)
 		vim.list_extend(result, toAdd)
 
 		for name, group in pairs(hl_data.lines) do
