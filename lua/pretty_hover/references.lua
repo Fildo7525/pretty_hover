@@ -113,11 +113,14 @@ function M.detect_hyper_links(tabled_line, word, index)
 		word = tabled_line[index]
 		local whole_link = vim.split(word, "\"", {trimempty = true})
 		local link = whole_link[2]
+		local styler = require("pretty_hover").get_config().line.styler
 
 		-- The link is not closed in the same part of the line separated by the space.
 		if word:sub(1,4) == "href" and word:match("\\</a>") then
-			local link_text = whole_link[3]:match("([%w_]+)\\</a>") or link
-			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
+			-- Handle the case of the link being the last word in the line.
+			styler = word:match("\\</a>" .. styler) ~= nil and styler or ""
+			local link_text = whole_link[3]:match("([%w_:.]+)\\</a>") or link
+			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")" .. styler
 
 		-- The link is closed in the next part of the line.
 		elseif word:sub(1,4) == "href" then
@@ -133,7 +136,11 @@ function M.detect_hyper_links(tabled_line, word, index)
 			-- The last word may be a space or just the closing tag.
 			local final_word = tabled_line[index]:match("(%w+)\\</a>") or ""
 			link_text = link_text .. " " .. final_word
-			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")"
+
+			-- Handle the case of the link being the last word in the line.
+			styler = tabled_line[index]:match("\\</a>" .. styler) ~= nil and styler or ""
+
+			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")" ..styler
 		end
 	end
 end
