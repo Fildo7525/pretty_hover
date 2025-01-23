@@ -157,7 +157,13 @@ end
 function M.open_float(hover_text, config)
 	if not hover_text or hover_text:len() == 0 then
 		-- There is nothing to display, quit out early
-		vim.notify("No information available", vim.log.levels.INFO)
+		local tabled_numbers = require("pretty_hover.number").get_number_representations()
+		if not tabled_numbers then
+			vim.notify("No information available", vim.log.levels.INFO)
+			return
+		end
+
+		M.open_float(tabled_numbers, config)
 		return
 	end
 
