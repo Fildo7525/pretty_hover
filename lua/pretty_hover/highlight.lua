@@ -47,11 +47,6 @@ function M.setup_colors(config)
 		return
 	end
 
-	local fg_dark = M.is_dark(normal.foreground or "#ffffff") and normal.foreground or normal.background
-	local fg_light = M.is_dark(normal.foreground or "#ffffff") and normal.background or normal.foreground
-	fg_dark = fg_dark or "#000000"
-	fg_light = fg_light or "#ffffff"
-
 	for kw, hl_groups in pairs(config.hl) do
 		local kw_color = hl_groups.color or "default"
 		local hex
