@@ -4,8 +4,8 @@ local compatibility = require("pretty_hover.core.compatibility")
 
 local M = {}
 
-M.winnr = 0
-M.bufnr = 0
+local winnr = 0
+local bufnr = 0
 
 --- Check if a table contains desired element. vim.tbl_contains does not work for all cases.
 ---@param tbl table Table to be checked.
@@ -135,20 +135,20 @@ end
 --- Close the opened floating window.
 function M.close_float()
 	-- Safeguard around accidentally calling close when there is no pretty_hover window open
-	if M.winnr == 0 and M.bufnr == 0 then
+	if winnr == 0 and bufnr == 0 then
 		return
 	end
 
 	-- Before closing the window, check if it is still valid.
-	if not api.nvim_win_is_valid(M.winnr) then
-		M.winnr = 0
-		M.bufnr = 0
+	if not api.nvim_win_is_valid(winnr) then
+		winnr = 0
+		bufnr = 0
 		return
 	end
 
-	api.nvim_win_close(M.winnr, true)
-	M.winnr = 0
-	M.bufnr = 0
+	api.nvim_win_close(winnr, true)
+	winnr = 0
+	bufnr = 0
 end
 
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
@@ -168,7 +168,7 @@ function M.open_float(hover_text, config)
 		return
 	end
 
-	if config.toggle and M.winnr ~= 0 then
+	if config.toggle and winnr ~= 0 then
 		M.close_float()
 		return
 	end
@@ -178,7 +178,7 @@ function M.open_float(hover_text, config)
 		language = vim.bo.filetype
 	end
 
-	M.bufnr, M.winnr = vim.lsp.util.open_floating_preview(out.text, language, {
+	bufnr, winnr = vim.lsp.util.open_floating_preview(out.text, language, {
 		border = config.border,
 		focusable = true,
 		focus = true,
@@ -189,14 +189,14 @@ function M.open_float(hover_text, config)
 		max_height = config.max_height,
 	})
 
-	vim.wo[M.winnr].foldenable = false
-	vim.bo[M.bufnr].modifiable = false
-	vim.bo[M.bufnr].bufhidden = 'wipe'
+	vim.wo[winnr].foldenable = false
+	vim.bo[bufnr].modifiable = false
+	vim.bo[bufnr].bufhidden = 'wipe'
 
-	hl.apply_highlight(config, out.highlighting, M.bufnr)
+	hl.apply_highlight(config, out.highlighting, bufnr)
 
 	vim.keymap.set('n', 'q', M.close_float, {
-		buffer = M.bufnr,
+		buffer = bufnr,
 		silent = true,
 		nowait = true,
 	})
