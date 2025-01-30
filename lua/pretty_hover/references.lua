@@ -107,41 +107,43 @@ end
 ---@param word string Word to be checked.
 ---@param index integer Index of the word from the @c tabled_line to be checked.
 function M.detect_hyper_links(tabled_line, word, index)
-	if word == "\\<a" then
+	if word ~= "\\<a" then
+		return
+	end
+
+	table.remove(tabled_line, index)
+
+	word = tabled_line[index]
+	local whole_link = vim.split(word, "\"", {trimempty = true})
+	local link = whole_link[2]
+	local styler = require("pretty_hover").get_config().line.styler
+
+	-- The link is not closed in the same part of the line separated by the space.
+	if word:sub(1,4) == "href" and word:match("\\</a>") then
+		-- Handle the case of the link being the last word in the line.
+		styler = word:match("\\</a>" .. styler) ~= nil and styler or ""
+		local link_text = whole_link[3]:match("([%w_:.]+)\\</a>") or link
+		tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")" .. styler
+
+	-- The link is closed in the next part of the line.
+	elseif word:sub(1,4) == "href" then
+		local link_text = whole_link[3]:sub(2)
 		table.remove(tabled_line, index)
 
-		word = tabled_line[index]
-		local whole_link = vim.split(word, "\"", {trimempty = true})
-		local link = whole_link[2]
-		local styler = require("pretty_hover").get_config().line.styler
-
-		-- The link is not closed in the same part of the line separated by the space.
-		if word:sub(1,4) == "href" and word:match("\\</a>") then
-			-- Handle the case of the link being the last word in the line.
-			styler = word:match("\\</a>" .. styler) ~= nil and styler or ""
-			local link_text = whole_link[3]:match("([%w_:.]+)\\</a>") or link
-			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")" .. styler
-
-		-- The link is closed in the next part of the line.
-		elseif word:sub(1,4) == "href" then
-			local link_text = whole_link[3]:sub(2)
+		-- Accumulate all the words until the closing tag.
+		while not tabled_line[index]:match("\\</a>") do
+			link_text = link_text .. " " .. tabled_line[index]
 			table.remove(tabled_line, index)
-
-			-- Accumulate all the words until the closing tag.
-			while not tabled_line[index]:match("\\</a>") do
-				link_text = link_text .. " " .. tabled_line[index]
-				table.remove(tabled_line, index)
-			end
-
-			-- The last word may be a space or just the closing tag.
-			local final_word = tabled_line[index]:match("(%w+)\\</a>") or ""
-			link_text = link_text .. " " .. final_word
-
-			-- Handle the case of the link being the last word in the line.
-			styler = tabled_line[index]:match("\\</a>" .. styler) ~= nil and styler or ""
-
-			tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")" ..styler
 		end
+
+		-- The last word may be a space or just the closing tag.
+		local final_word = tabled_line[index]:match("(%w+)\\</a>") or ""
+		link_text = link_text .. " " .. final_word
+
+		-- Handle the case of the link being the last word in the line.
+		styler = tabled_line[index]:match("\\</a>" .. styler) ~= nil and styler or ""
+
+		tabled_line[index] = "[" .. link_text  .. "](" .. link .. ")" ..styler
 	end
 end
 
