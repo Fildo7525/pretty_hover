@@ -199,7 +199,7 @@ function M.open_float(hover_text, config)
 	vim.bo[bufnr].modifiable = false
 	vim.bo[bufnr].bufhidden = 'wipe'
 
-	hl.apply_highlight(config, out.highlighting, bufnr)
+	hl.apply_highlight(out.highlighting, bufnr, config)
 
 	vim.keymap.set('n', 'q', M.close_float, {
 		buffer = bufnr,

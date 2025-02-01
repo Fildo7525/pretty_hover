@@ -80,10 +80,16 @@ end
 --- Applies the highlight to the lines of the opened floating window.
 --- The used groups are ErrorMsg and WarningMsg. For the proper highlighting, the
 --- highlight groups must be defined.
----@param config table Table of configurations.
 ---@param hl_data table Table of control variables that were set during the conversion to markdown.
 ---@param bufnr number Buffer number of the pop-up window.
-function M.apply_highlight(config, hl_data, bufnr)
+---@param config table|nil Table of configurations.
+---@overload fun(hl_data: table, bufnr: number)
+---@overload fun(hl_data: table, bufnr: number, config: table)
+function M.apply_highlight(hl_data, bufnr, config)
+	if not config then
+		config = require("pretty_hover").get_config()
+	end
+
 	if M.hl_ns then
 		api.nvim_buf_clear_namespace(bufnr, M.hl_ns, 0, -1)
 	end
