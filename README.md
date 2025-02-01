@@ -188,7 +188,21 @@ local parsed = require("pretty_hover.parser").parse(text)
 the parsed variable contains two fields `text` and `highlight`. The `text` field contains the converted text to markdown
 and the `highlight` field contains the highlight groups for the text.
 
-To see an example implementation see the `pretty_hover/examples/parsing.lua` file.
+You can use the `parsed` variable to display the hover message in your own way.
+
+```lua
+vim.lsp.util.open_floating_preview(parsed.text, "markdown", {
+	focus = true,
+	focusable = true,
+	wrap = true,
+	wrap_at = 100,
+	max_width = 100,
+	border = "rounded",
+	focus_id = "pretty-hover-example",
+})
+```
+
+To see an example of the implementation see the `pretty_hover/examples/parsing.lua` file.
 
 ### Limitations
 
