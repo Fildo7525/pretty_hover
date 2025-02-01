@@ -12,6 +12,8 @@ Lorem Ipsum has been the @c industry's standard dummy text ever since the 1500s,
 It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
 It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 
+@note This is a note.
+
 @param argc Number of arguments from the command line.
 @param argv The arguments in format of the strings.
 @return int The return of the program. Usually 0 for successful run.
@@ -36,6 +38,8 @@ local text_table = {
 "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
 "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
 "",
+"@note This is a note.",
+"",
 "@param argc Number of arguments from the command line.",
 "@param argv The arguments in format of the strings.",
 "@return int The return of the program. Usually 0 for successful run.",
@@ -50,7 +54,7 @@ local parser = require("pretty_hover.parser")
 local out = parser.parse(text)
 --[[ local out = parser.parse(text_table) ]]
 
-vim.lsp.util.open_floating_preview(out.text, "markdown", {
+local bufnr, winnr = vim.lsp.util.open_floating_preview(out.text, "markdown", {
 	focus = true,
 	focusable = true,
 	wrap = true,
@@ -59,3 +63,5 @@ vim.lsp.util.open_floating_preview(out.text, "markdown", {
 	border = "rounded",
 	focus_id = "pretty-hover-example",
 })
+
+require('pretty_hover.highlight').apply_highlight(require("pretty_hover").get_config(), out.highlighting, bufnr)
