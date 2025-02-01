@@ -64,4 +64,5 @@ local bufnr, winnr = vim.lsp.util.open_floating_preview(out.text, "markdown", {
 	focus_id = "pretty-hover-example",
 })
 
-require('pretty_hover.highlight').apply_highlight(require("pretty_hover").get_config(), out.highlighting, bufnr)
+--[[ require('pretty_hover.highlight').apply_highlight(out.highlighting, bufnr, require("pretty_hover").get_config()) ]]
+require('pretty_hover.highlight').apply_highlight(out.highlighting, bufnr)
