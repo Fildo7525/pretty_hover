@@ -101,7 +101,7 @@ function M.transform_line(line, config, control, hl_data)
 		end
 	end
 
-	local ref = require("pretty_hover.references")
+	local ref = require("pretty_hover.parser.references")
 	tbl = ref.check_line_for_references(tbl, config)
 	line = util.join_table(tbl, " ")
 	table.insert(result, line)
