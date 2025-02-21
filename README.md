@@ -215,9 +215,8 @@ To use this plugin with `blink.cmp` documentation you can add the following code
 	completion = {
 		documentation = {
 			draw = function(opts)
-				local out = {}
 				if opts.item and opts.item.documentation then
-					out = require("pretty_hover.parser").parse(opts.item.documentation.value)
+					local out = require("pretty_hover.parser").parse(opts.item.documentation.value)
 					opts.item.documentation.value = out:string()
 				end
 
