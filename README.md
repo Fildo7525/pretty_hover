@@ -29,6 +29,7 @@ pretty_hover
  - [Installation and setup](#installation-and-setup)
  - [Configuration](#configuration)
  - [Integration](#integration)
+	- [Blink.cmp](#blink.cmp)
  - [Default config](#default-configuration)
  - [Limitations](#limitations)
  - [Contributing](#contributing)
@@ -203,6 +204,30 @@ vim.lsp.util.open_floating_preview(parsed.text, "markdown", {
 ```
 
 To see an example of the implementation see the `pretty_hover/examples/parsing.lua` file.
+
+#### Blink.cmp
+
+:warning: You need to be on the `main` branch or on the version containing the commit `b88ba59`.
+
+To use this plugin with `blink.cmp` documentation you can add the following code snippet to you configuration:
+
+```lua
+{
+	completion = {
+		documentation = {
+			draw = function(opts)
+				local out = {}
+				if opts.item and opts.item.documentation then
+					out = require("pretty_hover.parser").parse(opts.item.documentation.value)
+					opts.item.documentation.value = out:string()
+				end
+
+				opts.default_implementation(opts)
+			end,
+		}
+	},
+}
+```
 
 ### Limitations
 
