@@ -6,9 +6,13 @@ local parser = require("pretty_hover.parser.parser")
 ---@field public text table
 ---@field public highlighting table
 ---@field public new fun(self, text: table, highlighting: table): ParserOutput
+---@field public string fun(self): string
 ParserOutput = {
 	text = {},
 	highlighting = {},
+	string = function(self)
+		return table.concat(self.text, "\n")
+	end,
 }
 
 --- Creates new ParserOutput object.
