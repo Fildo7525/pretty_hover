@@ -206,8 +206,7 @@ To see an example of the implementation see the `pretty_hover/examples/parsing.l
 
 #### Blink.cmp
 
-:warning: You need to be on the `main` branch or on the version containing the commit `b88ba59`.
-
+This functionality is supported for blink.cmp from version v0.13.0 and higher.
 To use this plugin with `blink.cmp` documentation you can add the following code snippet to you configuration:
 
 ```lua
