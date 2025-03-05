@@ -89,9 +89,11 @@ function M.transform_line(line, config, control, hl_data)
 	end
 
 	for name, group in pairs(config.group.detect) do
-		if group and util.tbl_contains(group, el) then
+		if group and util.tbl_contains(group, el) and string.match(tbl[1], el) then
 			tbl[2] = config.group.styler .. tbl[2] .. config.group.styler
-			table.remove(tbl, 1)
+			if el == tbl[1] then
+				table.remove(tbl, 1)
+			end
 
 			if control[name] then
 				control[tostring(name)] = false
@@ -128,11 +130,9 @@ function M.convert_to_markdown(toConvert, config, hl_data)
 		control[tostring(name)] = true
 	end
 
-	local lines = {}
+	local lines = toConvert
 	if type(toConvert) == "string" then
 		lines = util.split(toConvert, "([^\n]*)\n?")
-	elseif type(toConvert) == "table" then
-		lines = toConvert
 	end
 
 	if #lines == 0 then
