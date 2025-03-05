@@ -147,6 +147,22 @@ function M.detect_hyper_links(tabled_line, word, index)
 	end
 end
 
+--- Remove escaping sequence before every character in the escapees string.
+--- The used escapees are '*' by default. Be sure that adding character to the string will not break
+--- the highlighting. e.g. adding _ will not do harm in words like __foo but in workds like __foo__.
+--- The second one will be highlighted as bold. The first one will be shortened to _foo.
+---
+--- @param tabled_line table Line from the hover message split into words.
+--- @param escapees table? Characters to be removed from the escape sequence.
+local function remove_excape_characters(tabled_line, escapees)
+	escapees = vim.tbl_deep_extend("force", { "*" }, escapees or {})
+	local to_escape = table.concat(escapees)
+
+	for index, word in ipairs(tabled_line) do
+		tabled_line[index] = word:gsub("\\([" .. to_escape .. "])", "%1")
+	end
+end
+
 --- Converts all the references to markdown text.
 ---@param tabled_line table Words to be checked.
 ---@param config table Table of options to be used for the conversion to the markdown language.
@@ -154,6 +170,8 @@ end
 function M.check_line_for_references(tabled_line, config)
 	local surround = M.get_surround_string(tabled_line, config)
 	surround.openedReference = false
+
+	remove_excape_characters(tabled_line)
 
 	for index, word in ipairs(tabled_line) do
 		if util.tbl_contains(config.references.detect, word) then
