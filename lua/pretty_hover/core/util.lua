@@ -177,7 +177,7 @@ function M.open_float(hover_text, format, config)
 			return
 		end
 
-		M.open_float(tabled_numbers:split("\n"), config)
+		M.open_float(tabled_numbers:split("\n"), format, config)
 		return
 	end
 
