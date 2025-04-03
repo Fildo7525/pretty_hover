@@ -7,6 +7,19 @@ local M = {}
 local winnr = 0
 local bufnr = 0
 
+function string:split(delimiter)
+	local result = { }
+	local from	= 1
+	local delim_from, delim_to = string.find( self, delimiter, from	)
+	while delim_from do
+		table.insert( result, string.sub( self, from , delim_from-1 ) )
+		from	= delim_to + 1
+		delim_from, delim_to = string.find( self, delimiter, from	)
+	end
+	table.insert( result, string.sub( self, from	) )
+	return result
+end
+
 --- Check if a table contains desired element. vim.tbl_contains does not work for all cases.
 ---@param tbl table Table to be checked.
 ---@param el string Element to be checked.
@@ -152,10 +165,11 @@ function M.close_float()
 end
 
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
----@param hover_text string Text to be converted.
+---@param hover_text string[] Text to be converted.
+---@param format string Filetype to be used for the conversion.
 ---@param config table Table of options to be used for the conversion to the markdown language.
-function M.open_float(hover_text, config)
-	if not hover_text or hover_text:len() == 0 then
+function M.open_float(hover_text, format, config)
+	if not hover_text or #hover_text == 0 then
 		-- There is nothing to display, quit out early
 		local tabled_numbers = require("pretty_hover.number").get_number_representations()
 		if not tabled_numbers then
@@ -163,7 +177,7 @@ function M.open_float(hover_text, config)
 			return
 		end
 
-		M.open_float(tabled_numbers, config)
+		M.open_float(tabled_numbers:split("\n"), config)
 		return
 	end
 
@@ -179,7 +193,7 @@ function M.open_float(hover_text, config)
 		return
 	end
 
-	local language = 'markdown'
+	local language = format
 	if config.one_liner then
 		language = vim.bo.filetype
 	end

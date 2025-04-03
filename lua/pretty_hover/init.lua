@@ -1,3 +1,8 @@
+local api = vim.api
+local lsp = vim.lsp
+local util = vim.lsp.util
+local hover_ns = api.nvim_create_namespace('pretty_hover_range')
+
 local M = {}
 
 M.config = {}
@@ -35,51 +40,96 @@ local function parse_response_contents(contents)
 end
 
 --- Function that will be used in hover request invoked by lsp.
----@param responses table Table of responses from the server.
-local function local_hover_request(responses)
-	local wasEmpty = true
-	for _, response in pairs(responses) do
-		if response.result and response.result.contents then
-			wasEmpty = false
-			local contents = response.result.contents
+---@param results table Table of responses from the server.
+---@param ctx table Context of the request.
+local function local_hover_request(results, ctx)
+	local bufnr = assert(ctx.bufnr)
+	if api.nvim_get_current_buf() ~= bufnr then
+		-- Ignore result since buffer changed. This happens for slow language servers.
+		return
+	end
 
-			-- We have to do this because of java. Sometimes is the value parameter split
-			-- into two chunks. Leaving the rest of the hover message as the second argument
-			-- in the received table.
-			if contents.language == "java" then
-				for _, content in pairs(contents) do
-					local hover_text = content.value or content
-					if not hover_text then
-						vim.notify("There is no text to be displayed", vim.log.levels.INFO)
-						return
-					end
+	-- Filter errors from results
+	local results1 = {} --- @type table<integer,lsp.Hover>
 
-					h_util.open_float(hover_text, M.config)
-				end
+	for client_id, resp in pairs(results) do
+		local err, result = resp.err, resp.result
+		if err then
+			lsp.log.error(err.code, err.message)
+		elseif result then
+			results1[client_id] = result
+		end
+	end
+
+	if vim.tbl_isempty(results1) then
+		if M.config.hover_cnf.silent ~= true then
+			vim.notify('No information available')
+		end
+		return
+	end
+
+	local contents = {} --- @type string[]
+
+	local nresults = #vim.tbl_keys(results1)
+
+	local format = 'markdown'
+
+	for client_id, result in pairs(results1) do
+		local client = assert(lsp.get_client_by_id(client_id))
+		if nresults > 1 then
+			-- Show client name if there are multiple clients
+			contents[#contents + 1] = string.format('# %s', client.name)
+		end
+		if type(result.contents) == 'table' and result.contents.kind == 'plaintext' then
+			if #results1 == 1 then
+				format = 'plaintext'
+				contents = vim.split(result.contents.value or '', '\n', { trimempty = true })
 			else
-				local hover_text = parse_response_contents(response.result.contents)
-				if not hover_text then
-					vim.notify("There is no text to be displayed", vim.log.levels.INFO)
-					return
-				end
-
-				h_util.open_float(hover_text, M.config)
+				-- Surround plaintext with ``` to get correct formatting
+				contents[#contents + 1] = '```'
+				vim.list_extend(
+					contents,
+					vim.split(result.contents.value or '', '\n', { trimempty = true })
+				)
+				contents[#contents + 1] = '```'
 			end
+		else
+			vim.list_extend(contents, util.convert_input_to_markdown_lines(result.contents))
 		end
+		local range = result.range
+		if range then
+			local start = range.start
+			local end_ = range['end']
+			local start_idx = util._get_line_byte_from_position(bufnr, start, client.offset_encoding)
+			local end_idx = util._get_line_byte_from_position(bufnr, end_, client.offset_encoding)
+
+			vim.hl.range(
+				bufnr,
+				hover_ns,
+				'LspReferenceTarget',
+				{ start.line, start_idx },
+				{ end_.line, end_idx },
+				{ priority = vim.hl.priorities.user }
+			)
+		end
+		contents[#contents + 1] = '---'
 	end
 
-	if wasEmpty then
-		local hover_text = number.get_number_representations()
-		if not hover_text then
-			return
-		end
+	-- Remove last linebreak ('---')
+	contents[#contents] = nil
 
-		h_util.open_float(hover_text, M.config)
+	if vim.tbl_isempty(contents) then
+		if M.config.hover_cnf.silent ~= true then
+			vim.notify('No information available')
+		end
+		return
 	end
+
+	h_util.open_float(contents, format, M.config)
 end
 
 --- Parses the response from the server and displays the hover information converted to markdown.
-function M.hover()
+function M.hover(config)
 	local util = require("vim.lsp.util")
 	local params = util.make_position_params(0, 'utf-16')
 
@@ -91,6 +141,9 @@ function M.hover()
 		vim.notify("There is no client for this filetype or the client does not support the hover capability.", vim.log.levels.WARN)
 		return
 	end
+
+	config = config or {}
+	M.config.hover_cnf = config
 
 	vim.lsp.buf_request_all(0, "textDocument/hover", params, local_hover_request)
 end
