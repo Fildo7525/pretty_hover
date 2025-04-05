@@ -228,7 +228,7 @@ To use this plugin with `blink.cmp` documentation you can add the following code
 
 ### Limitations
 
-Currently, neovim supports these markdown stylers: \`, \*, \`\`\`[language]. Unfortunately, you cannot do any
+Currently, Neovim supports these markdown stylers: \`, \*, \`\`\`[language]. Unfortunately, you cannot do any
 of their combination. If the support is extended there will be more options to style the pop-up window.
 Newly this plugin started supporting highlighting see the [Configuration](#configuration) for more information.
 
