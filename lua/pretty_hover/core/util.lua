@@ -136,7 +136,7 @@ end
 
 --- This function checks all the active clients for current buffer and returns the active client that supports the current file type.
 ---@return table|nil Active client for the current buffer or nil if there is no active client.
-function M.get_current_active_clent()
+function M.get_current_active_client()
 	for _, client in ipairs(compatibility.get_clients()) do
 		if M.tbl_contains(client.config.filetypes, vim.bo.filetype) then
 			return client
@@ -220,6 +220,8 @@ function M.open_float(hover_text, format, config)
 		silent = true,
 		nowait = true,
 	})
+
+    return bufnr, winnr
 end
 
 return M

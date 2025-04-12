@@ -125,7 +125,17 @@ local function local_hover_request(results, ctx)
 		return
 	end
 
-	h_util.open_float(contents, format, M.config)
+	local _, winnr = h_util.open_float(contents, format, M.config)
+    
+    -- Remove selection highlighting after window is closed
+    api.nvim_create_autocmd('WinClosed', {
+        pattern = tostring(winnr),
+        once = true,
+        callback = function()
+            api.nvim_buf_clear_namespace(bufnr, hover_ns, 0, -1)
+            return true
+        end,
+    })
 end
 
 --- Parses the response from the server and displays the hover information converted to markdown.
@@ -134,7 +144,7 @@ function M.hover(config)
 	local params = util.make_position_params(0, 'utf-16')
 
 	-- Check if the server for this file type exists and supports hover.
-	local client = h_util.get_current_active_clent()
+	local client = h_util.get_current_active_client()
 	local hover_support_present = client and client.capabilities.textDocument.hover
 
 	if not client or not hover_support_present then
