@@ -39,10 +39,49 @@ local function parse_response_contents(contents)
 	return hover_text
 end
 
---- Function that will be used in hover request invoked by lsp.
----@param results table Table of responses from the server.
----@param ctx table Context of the request.
-local function local_hover_request(results, ctx)
+function M.request_below11(results)
+	local wasEmpty = true
+	for _, response in pairs(results) do
+		if response.result and response.result.contents then
+			wasEmpty = false
+			local contents = response.result.contents
+
+			-- We have to do this because of java. Sometimes is the value parameter split
+			-- into two chunks. Leaving the rest of the hover message as the second argument
+			-- in the received table.
+			if contents.language == "java" then
+				for _, content in pairs(contents) do
+					local hover_text = content.value or content
+					if not hover_text then
+						vim.notify("There is no text to be displayed", vim.log.levels.INFO)
+						return
+					end
+
+					h_util.open_float(hover_text, "markdown", M.config)
+				end
+			else
+				local hover_text = parse_response_contents(response.result.contents)
+				if not hover_text then
+					vim.notify("There is no text to be displayed", vim.log.levels.INFO)
+					return
+				end
+
+				h_util.open_float(hover_text, "markdown", M.config)
+			end
+		end
+	end
+
+	if wasEmpty then
+		local hover_text = number.get_number_representations()
+		if not hover_text then
+			return
+		end
+
+		h_util.open_float(hover_text, "markdown", M.config)
+	end
+end
+
+function M.request_above11(results, ctx)
 	local bufnr = assert(ctx.bufnr)
 	if api.nvim_get_current_buf() ~= bufnr then
 		-- Ignore result since buffer changed. This happens for slow language servers.
@@ -126,16 +165,28 @@ local function local_hover_request(results, ctx)
 	end
 
 	local _, winnr = h_util.open_float(contents, format, M.config)
-    
-    -- Remove selection highlighting after window is closed
-    api.nvim_create_autocmd('WinClosed', {
-        pattern = tostring(winnr),
-        once = true,
-        callback = function()
-            api.nvim_buf_clear_namespace(bufnr, hover_ns, 0, -1)
-            return true
-        end,
-    })
+
+	-- Remove selection highlighting after window is closed
+	api.nvim_create_autocmd('WinClosed', {
+		pattern = tostring(winnr),
+		once = true,
+		callback = function()
+			api.nvim_buf_clear_namespace(bufnr, hover_ns, 0, -1)
+			return true
+		end,
+	})
+end
+
+--- Function that will be used in hover request invoked by lsp.
+---@param results table Table of responses from the server.
+---@param ctx table Context of the request.
+local function local_hover_request(results, ctx)
+	if vim.fn.has('nvim-0.11') == 1 then
+		M.request_above11(results, ctx)
+		return
+	end
+
+	M.request_below11(results)
 end
 
 --- Parses the response from the server and displays the hover information converted to markdown.
