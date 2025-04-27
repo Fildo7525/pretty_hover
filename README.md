@@ -102,6 +102,7 @@ require("pretty_hover").close()
 | max_width		| Sets the maximum width of the window. If you don't want any limitation set to nil. |
 | max_height	   | Sets the maximum height of the window. If you don't want any limitation set to nil. |
 | toggle	   | Flag detecting whether you want to have the hover just as a toggle window or make the popup focusable. |
+| multi_server	   | Flag detecting whether you want to use the new multi lsp support or not. |
 
 > _**NOTE**_: To really use this plugin you have to create a keymap that calls `require('pretty_hover').hover()` function.
 
@@ -169,6 +170,9 @@ until the `@endcode` is hit. When the filetype is not specified in the flag `@co
 		-- Here you can set up your highlight groups.
 	},
 
+	-- If you use nvim 0.11.0 or higher you can choose, whether you want to use the new
+	-- multi lsp support or not. Otherwise this option is ignored.
+	multi_server = true,
 	border = "rounded",
 	wrap = true,
 	max_width = nil,

@@ -181,7 +181,9 @@ end
 ---@param results table Table of responses from the server.
 ---@param ctx table Context of the request.
 local function local_hover_request(results, ctx)
-	if vim.fn.has('nvim-0.11') == 1 then
+	-- Multi-server support is only available in nvim-0.11 and above.
+	-- The user can still decide to use the multi-server or not.
+	if vim.fn.has('nvim-0.11') == 1 and M.config.multi_server then
 		M.request_above11(results, ctx)
 		return
 	end

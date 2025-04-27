@@ -56,6 +56,7 @@ return {
 		}
 	},
 
+	multi_server = true,
 	border = "rounded",
 	wrap = true,
 	max_width = nil,
