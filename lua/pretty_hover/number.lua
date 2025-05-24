@@ -91,7 +91,9 @@ end
 --- Function to get all representations of a number
 --- @param num string Number to get the representations of.
 --- @param type number Type of the number.
-function M.get_numerical_representations(num, type)
+--- @param return_type string The type of the return value, either "string" or "table".
+--- @return string[]|nil A table containing the representations of the number in different bases.
+function M.get_numerical_representations(num, type, return_type)
 	local tmp = tonumber(num, type)
 	if not tmp then
 		return nil
@@ -102,14 +104,23 @@ function M.get_numerical_representations(num, type)
 	local octal = M.toOctal(tmp)
 	local hexadecimal = M.toHex(tmp)
 
-	return string.format("### Number types:\n---\nBinary: 0b%s\nOctal: 0o%s\nDecimal: %s\nHexadecimal: 0x%s\n", binary, octal, decimal, hexadecimal)
+	local s =  string.format("### Number types:\n---\nBinary: 0b%s\nOctal: 0o%s\nDecimal: %s\nHexadecimal: 0x%s\n", binary, octal, decimal, hexadecimal)
+	if return_type == "string" then
+		return s
+	end
+	return s:split("\n")
 end
 
 --- Function to get the number representations of the current word under the cursor.
 --- @see get_number_type
---- @return string|nil The number representations of the current word under the cursor.
-function M.get_number_representations()
+--- @param return_type? string The number to get the representations of.
+--- @return string|string[]|nil The number representations of the current word under the cursor.
+function M.get_number_representations(return_type)
 	local num = vim.fn.expand("<cword>");
+	if return_type == nil then
+		return_type = "table"
+	end
+
 	if num:sub(1,1) == '-' then
 		num = num:sub(2)
 	end
@@ -122,7 +133,7 @@ function M.get_number_representations()
 	if number_type ~= 10 then
 		num = num:sub(2)
 	end
-	return M.get_numerical_representations(num, number_type)
+	return M.get_numerical_representations(num, number_type, return_type)
 end
 
 return M
