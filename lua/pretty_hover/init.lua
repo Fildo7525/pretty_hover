@@ -40,10 +40,11 @@ local function parse_response_contents(contents)
 end
 
 function M.request_below11(results)
-	local wasEmpty = true
+	local called = false
+
 	for _, response in pairs(results) do
-		if response.result and response.result.contents then
-			wasEmpty = false
+		if response.result and response.result.contents and called == false then
+			called = true
 			local contents = response.result.contents
 
 			-- We have to do this because of java. Sometimes is the value parameter split
@@ -71,13 +72,14 @@ function M.request_below11(results)
 		end
 	end
 
-	if wasEmpty then
+	if not called then
 		local hover_text = number.get_number_representations()
 		if not hover_text then
 			return
 		end
 
 		h_util.open_float(hover_text, "markdown", M.config)
+		return
 	end
 end
 
