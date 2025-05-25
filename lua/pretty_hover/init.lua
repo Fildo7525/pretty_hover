@@ -195,7 +195,6 @@ end
 
 --- Parses the response from the server and displays the hover information converted to markdown.
 function M.hover(config)
-	local util = require("vim.lsp.util")
 	local params = util.make_position_params(0, 'utf-16')
 
 	-- Check if the server for this file type exists and supports hover.
@@ -210,7 +209,7 @@ function M.hover(config)
 	config = config or {}
 	M.config.hover_cnf = config
 
-	vim.lsp.buf_request_all(0, "textDocument/hover", params, local_hover_request)
+	lsp.buf_request_all(0, "textDocument/hover", params, local_hover_request)
 end
 
 --- Setup the plugin to use the given options.
@@ -221,10 +220,10 @@ function M.setup(config)
 	require("pretty_hover.highlight").setup_colors(M.config)
 
 	if M.config.toggle then
-		local id = vim.api.nvim_create_augroup("pretty_hover_augroup", {
+		local id = api.nvim_create_augroup("pretty_hover_augroup", {
 			clear = true,
 		})
-		vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+		api.nvim_create_autocmd({ "CursorMoved" }, {
 			callback = function()
 				require("pretty_hover.core.util").close_float()
 			end,
