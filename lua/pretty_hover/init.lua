@@ -39,7 +39,7 @@ local function parse_response_contents(contents)
 	return hover_text
 end
 
-function M.request_below11(results)
+local function request_below11(results)
 	local called = false
 
 	for _, response in pairs(results) do
@@ -83,7 +83,7 @@ function M.request_below11(results)
 	end
 end
 
-function M.request_above11(results, ctx)
+local function request_above11(results, ctx)
 	local bufnr = assert(ctx.bufnr)
 	if api.nvim_get_current_buf() ~= bufnr then
 		-- Ignore result since buffer changed. This happens for slow language servers.
@@ -186,11 +186,11 @@ local function local_hover_request(results, ctx)
 	-- Multi-server support is only available in nvim-0.11 and above.
 	-- The user can still decide to use the multi-server or not.
 	if vim.fn.has('nvim-0.11') == 1 and M.config.multi_server then
-		M.request_above11(results, ctx)
+		request_above11(results, ctx)
 		return
 	end
 
-	M.request_below11(results)
+	request_below11(results)
 end
 
 --- Parses the response from the server and displays the hover information converted to markdown.
