@@ -2,10 +2,9 @@ local api = vim.api
 local lsp = vim.lsp
 local util = vim.lsp.util
 local hover_ns = api.nvim_create_namespace('pretty_hover_range')
+local cfg = require("pretty_hover.config")
 
 local M = {}
-
-M.config = {}
 
 local h_util = require("pretty_hover.core.util")
 local number = require("pretty_hover.number")
@@ -58,7 +57,7 @@ local function request_below11(results)
 						return
 					end
 
-					h_util.open_float(hover_text, "markdown", M.config)
+					h_util.open_float(hover_text, "markdown", cfg:instance())
 				end
 			else
 				local hover_text = parse_response_contents(response.result.contents)
@@ -67,7 +66,7 @@ local function request_below11(results)
 					return
 				end
 
-				h_util.open_float(hover_text, "markdown", M.config)
+				h_util.open_float(hover_text, "markdown", cfg:instance())
 			end
 		end
 	end
@@ -78,7 +77,7 @@ local function request_below11(results)
 			return
 		end
 
-		h_util.open_float(hover_text, "markdown", M.config)
+		h_util.open_float(hover_text, "markdown", cfg:instance())
 		return
 	end
 end
@@ -103,7 +102,7 @@ local function request_above11(results, ctx)
 	end
 
 	if vim.tbl_isempty(results1) then
-		if M.config.hover_cnf.silent ~= true then
+		if cfg:instance().hover_cnf.silent ~= true then
 			vim.notify('No information available')
 		end
 		return
@@ -160,13 +159,13 @@ local function request_above11(results, ctx)
 	contents[#contents] = nil
 
 	if vim.tbl_isempty(contents) then
-		if M.config.hover_cnf.silent ~= true then
+		if cfg:instance().hover_cnf.silent ~= true then
 			vim.notify('No information available')
 		end
 		return
 	end
 
-	local _, winnr = h_util.open_float(contents, format, M.config)
+	local _, winnr = h_util.open_float(contents, format, cfg:instance())
 
 	-- Remove selection highlighting after window is closed
 	api.nvim_create_autocmd('WinClosed', {
@@ -185,7 +184,7 @@ end
 local function local_hover_request(results, ctx)
 	-- Multi-server support is only available in nvim-0.11 and above.
 	-- The user can still decide to use the multi-server or not.
-	if vim.fn.has('nvim-0.11') == 1 and M.config.multi_server then
+	if vim.fn.has('nvim-0.11') == 1 and cfg:instance().multi_server then
 		request_above11(results, ctx)
 		return
 	end
@@ -207,7 +206,7 @@ function M.hover(config)
 	end
 
 	config = config or {}
-	M.config.hover_cnf = config
+	cfg:instance().hover_cnf = config
 
 	lsp.buf_request_all(0, "textDocument/hover", params, local_hover_request)
 end
@@ -215,11 +214,9 @@ end
 --- Setup the plugin to use the given options.
 ---@param config table Options to be set for the plugin.
 function M.setup(config)
-	config = config or {}
-	M.config = vim.tbl_deep_extend("force", require("pretty_hover.config"), config)
-	require("pretty_hover.highlight").setup_colors(M.config)
+	config = cfg:instance(config)
 
-	if M.config.toggle then
+	if config.toggle then
 		local id = api.nvim_create_augroup("pretty_hover_augroup", {
 			clear = true,
 		})
@@ -238,7 +235,7 @@ function M.close()
 end
 
 function M.get_config()
-	return M.config
+	return cfg:instance()
 end
 
 return M

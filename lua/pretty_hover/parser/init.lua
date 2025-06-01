@@ -82,7 +82,7 @@ end
 --- @overload fun(text: string): ParserOutput
 --- @overload fun(text: table): ParserOutput
 function M.parse(text)
-	local config = require("pretty_hover").get_config()
+	local config = require("pretty_hover.config"):instance()
 
 	local hl_data = {
 		replacement = "",

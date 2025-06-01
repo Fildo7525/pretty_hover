@@ -1,4 +1,7 @@
-return {
+---@class PrettyHoverConfig
+local M = {
+	_config = {},
+
 	header = {
 		detect = {"[\\@]class"},
 		styler = '###',
@@ -64,3 +67,22 @@ return {
 	toggle = false,
 }
 
+---@class PrettyHoverConfig
+---@brief This class is used to configure the pretty_hover plugin.
+---@param config table Table of options to be used for the pretty_hover configuration. If none or empty is provided, the
+---previous configuration will be used. If the previous configuration is also empty, the default configuration will be used.
+---@return table config The configuration table that will be used for the pretty_hover plugin.
+function M:instance(config)
+	config = config or {}
+
+	if vim.tbl_isempty(config) and not vim.tbl_isempty(self._config) then
+		return self._config
+	end
+
+	self._config = vim.tbl_deep_extend('force', {}, self, config)
+	require("pretty_hover.highlight").setup_colors(self._config)
+	return self._config
+end
+
+-- return M
+return M
