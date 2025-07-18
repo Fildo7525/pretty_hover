@@ -1,5 +1,6 @@
 local api = vim.api
 local hl = require("pretty_hover.highlight")
+local hover_ns = api.nvim_create_namespace('pretty_hover_range')
 local compatibility = require("pretty_hover.core.compatibility")
 
 local M = {}
@@ -151,6 +152,8 @@ function M.close_float()
 	if winnr == 0 and bufnr == 0 then
 		return
 	end
+
+	api.nvim_buf_clear_namespace(vim.fn.bufnr(), hover_ns, 0, -1)
 
 	-- Before closing the window, check if it is still valid.
 	if not api.nvim_win_is_valid(winnr) then
