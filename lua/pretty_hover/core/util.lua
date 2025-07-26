@@ -46,10 +46,7 @@ end
 ---@param el string Element to be checked for.
 ---@return string The element if it is found, nil otherwise.
 function M.find(tbl, el)
-	if not el then
-		return ""
-	end
-	if not tbl then
+	if not el or not tbl then
 		return ""
 	end
 
