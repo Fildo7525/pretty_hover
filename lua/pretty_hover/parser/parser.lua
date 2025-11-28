@@ -21,6 +21,10 @@ function M.transform_line(line, config, control, hl_data)
 		line = line:gsub("^%s+", "")
 	end
 
+	if line:find("&nbsp;") then
+		line = line:gsub("&nbsp;", " ")
+	end
+
 	local tbl = util.split(line)
 	local el = tbl[1]
 	local insertEmptyLine = false
