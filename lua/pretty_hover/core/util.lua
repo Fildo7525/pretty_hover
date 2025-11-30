@@ -166,6 +166,35 @@ function M.close_float()
 	bufnr = 0
 end
 
+--- The file is a link in markdown style and is represented as [\w+](<uri>#L<row>,<col>).
+--- This function opens the file in a new buffer and jumps to the given line and column.
+function M.open_file_under_cursor()
+	local line = api.nvim_get_current_line()
+	local target = line:match("%[(.-)%]%((.-)#L(%d+),?(%d*)%)")
+
+	if not target then
+		vim.notify("1. No valid file link under cursor", vim.log.levels.WARN)
+		return
+	end
+
+	local _, uri, row, col = line:match("%[(.-)%]%((.-)#L(%d+),?(%d*)%)")
+	if not uri or not row then
+		vim.notify("2. No valid file link under cursor", vim.log.levels.WARN)
+		return
+	end
+
+	row = tonumber(row)
+	col = tonumber(col) or 0
+
+	M.close_float()
+
+	-- Open the file in a new buffer
+	vim.cmd("edit " .. uri)
+
+	-- Jump to the specified line and column
+	api.nvim_win_set_cursor(0, {row, col})
+end
+
 --- Opens a floating window with the documentation transformed from doxygen to markdown.
 ---@param hover_text string[] Text to be converted.
 ---@param format string Filetype to be used for the conversion.
@@ -216,6 +245,12 @@ function M.open_float(hover_text, format, config)
 	vim.bo[bufnr].bufhidden = 'wipe'
 
 	hl.apply_highlight(out.highlighting, bufnr, config)
+
+	vim.keymap.set('n', 'gf', M.open_file_under_cursor, {
+		buffer = bufnr,
+		silent = true,
+		nowait = true,
+	})
 
 	vim.keymap.set('n', 'q', M.close_float, {
 		buffer = bufnr,
