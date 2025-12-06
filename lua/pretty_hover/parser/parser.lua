@@ -93,7 +93,7 @@ function M.transform_line(line, config, control, hl_data)
 	end
 
 	for name, group in pairs(config.group.detect) do
-		if group and util.tbl_contains(group, el) and string.match(tbl[1], el) then
+		if group and util.tbl_contains(group, el) and string.match(tbl[1], el) and tbl[2] ~= nil then
 			tbl[2] = config.group.styler .. tbl[2] .. config.group.styler
 			if el == tbl[1] then
 				table.remove(tbl, 1)
