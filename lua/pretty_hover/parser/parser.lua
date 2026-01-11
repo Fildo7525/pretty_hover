@@ -25,6 +25,11 @@ function M.transform_line(line, config, control, hl_data)
 		line = line:gsub("&nbsp;", " ")
 	end
 
+	if line:find("^(%s*)\\%-%s*") then
+		line = line:gsub("^(%s*)\\%-%s*", "%1- ")
+		-- vim.print(line)
+	end
+
 	local tbl = util.split(line)
 	local el = tbl[1]
 	local insertEmptyLine = false
