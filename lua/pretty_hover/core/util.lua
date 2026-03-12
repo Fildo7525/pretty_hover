@@ -65,7 +65,7 @@ function M.printable_table_size(tbl)
 	local count = 0
 
 	for _, el in pairs(tbl) do
-		if el and not el:gmatch("```")() then
+		if el then
 			count = count + 1
 		end
 	end
