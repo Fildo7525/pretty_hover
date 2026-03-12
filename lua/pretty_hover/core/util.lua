@@ -79,7 +79,6 @@ end
 ---@return table Table of strings split by the separator.
 function M.split(toSplit, separator)
 	local indentation = nil
-	local text_start_detected = false
 
 	if separator == nil then
 		indentation = string.match(toSplit, "^%s+")
@@ -102,18 +101,7 @@ function M.split(toSplit, separator)
 			substring = substring:sub(5)
 		end
 
-		if substring == "```text" then
-			text_start_detected = true
-			goto continue
-		end
-
 		table.insert(chunks, substring)
-		::continue::
-	end
-
-	-- If text start is detected (```text), remove the previoius to the last element.
-	if text_start_detected then
-		chunks[#chunks-2] = " "
 	end
 
 	return chunks

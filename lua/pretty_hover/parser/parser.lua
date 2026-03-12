@@ -5,6 +5,7 @@ local M = {
 		detected = false,
 		option = "",
 	},
+	text_start_detected = false,
 }
 
 --- Transforms the line from doxygen type into markdown
@@ -29,6 +30,17 @@ function M.transform_line(line, config, control, hl_data)
 		line = line:gsub("^(%s*)\\%-%s*", "%1- ")
 		-- vim.print(line)
 	end
+
+	if line:find("^```text$") then
+		M.text_start_detected = true
+		line = ""
+	end
+
+	if line:find("^```$") and M.text_start_detected then
+		M.text_start_detected = false
+		line = ""
+	end
+
 
 	local tbl = util.split(line)
 	local el = tbl[1]
