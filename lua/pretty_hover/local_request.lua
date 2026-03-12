@@ -103,7 +103,14 @@ local function request_above11(results, ctx)
 
 	if vim.tbl_isempty(results1) then
 		if cfg:instance().hover_cnf.silent ~= true then
-			vim.notify('No information available')
+			local hover_text = number.get_number_representations()
+			if not hover_text then
+				vim.notify('No information available')
+				return
+			end
+
+			h_util.open_float(hover_text, "markdown", cfg:instance())
+			return
 		end
 		return
 	end
