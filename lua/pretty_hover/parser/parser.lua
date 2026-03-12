@@ -49,10 +49,10 @@ function M.transform_line(line, config, control, hl_data)
 	for name, group in pairs(config.hl) do
 		if util.tbl_contains(group.detect, el) then
 			tbl[1] = string.upper(util.find(group.detect, el))
-			if tbl[1]:sub(1, 2) == '@' then
-				tbl[1] = tbl[1]:sub(3)
-			else
+			if tbl[1]:sub(1, 1) == '@' then
 				tbl[1] = tbl[1]:sub(2)
+			else
+				tbl[1] = tbl[1]:sub(3)
 			end
 			hl_data.lines[tostring(name)].detected = true
 			hl_data.replacement = tbl[1]
