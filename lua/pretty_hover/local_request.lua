@@ -25,7 +25,7 @@ local function parse_response_contents(contents)
 	if not pcall(function() hover_text = contents[1].value end) then
 		return
 	end
-
+	hover_text = hover_text or ""
 	for i = 2, #contents do
 		if type(contents[i]) ~= "string" then
 			vim.notify("Unexpected item type found in hover request's response.\n" ..
