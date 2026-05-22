@@ -111,6 +111,11 @@ function M.transform_line(line, config, control, hl_data)
 	elseif util.tbl_contains(config.code.ending, el) then
 		table.insert(result, "```")
 		table.remove(tbl, 1)
+
+	elseif tbl[1] == "<hr>" then
+		table.insert(result, "---")
+		table.remove(tbl, 1)
+
 	end
 
 	for name, group in pairs(config.group.detect) do
