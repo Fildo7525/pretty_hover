@@ -100,7 +100,9 @@ function M.apply_highlight(hl_data, bufnr, config)
 		if hl_data.lines[tostring(name)] then
 			for _, line in pairs(hl_data.lines[tostring(name)]) do
 				if type(line) == "table" then
-					api.nvim_buf_add_highlight(bufnr, M.hl_ns, "PH"..tostring(name), line.line_nr, 0, line.to);
+					local start_region = { line.line_nr, 0 }
+					local end_region = { line.line_nr, line.to }
+					vim.hl.range(bufnr, M.hl_ns, "PH"..tostring(name), start_region, end_region)
 				end
 			end
 		end
