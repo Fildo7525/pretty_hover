@@ -116,6 +116,13 @@ function M.transform_line(line, config, control, hl_data)
 		table.insert(result, "---")
 		table.remove(tbl, 1)
 
+	elseif type(tbl[1]) == "string" and tbl[1]:find("\\<i>[%d]")  then
+
+		string.sub(tbl[1], 1, 3)
+			:gsub("\\<i>", "*")
+			:gsub("</i>", "*")
+
+		tbl[1] = "* []"
 	end
 
 	for name, group in pairs(config.group.detect) do
