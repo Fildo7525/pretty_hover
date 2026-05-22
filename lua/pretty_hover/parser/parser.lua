@@ -22,6 +22,10 @@ function M.transform_line(line, config, control, hl_data)
 		line = line:gsub("^%s+", "")
 	end
 
+	if line:find("\\`") then
+		line = line:gsub("\\`", "`")
+	end
+
 	if line:find("&nbsp;") then
 		line = line:gsub("&nbsp;", " ")
 	end
