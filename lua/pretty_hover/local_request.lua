@@ -142,13 +142,14 @@ local function request_above11(results, ctx)
 			end
 		else
 			vim.list_extend(contents, util.convert_input_to_markdown_lines(result.contents))
+
 		end
 		local range = result.range
 		if range then
 			local start = range.start
 			local end_ = range['end']
-			local start_idx = util._get_line_byte_from_position(bufnr, start, client.offset_encoding)
-			local end_idx = util._get_line_byte_from_position(bufnr, end_, client.offset_encoding)
+			local start_idx = h_util.get_line_byte_from_position(bufnr, start, client.offset_encoding)
+			local end_idx = h_util.get_line_byte_from_position(bufnr, end_, client.offset_encoding)
 
 			vim.hl.range(
 				bufnr,

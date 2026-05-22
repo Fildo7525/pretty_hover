@@ -246,7 +246,20 @@ function M.open_float(hover_text, format, config)
 		nowait = true,
 	})
 
-    return bufnr, winnr
+	return bufnr, winnr
+end
+
+---@param _bufnr integer
+---@param position {line: integer, character: integer}
+---@param offset_encoding 'utf-8'|'utf-16'|'utf-32'
+---@return integer
+function M.get_line_byte_from_position(_bufnr, position, offset_encoding)
+	local col = position.character
+	if col == 0 then
+		return 0
+	end
+	local line = vim.api.nvim_buf_get_lines(_bufnr, position.line, position.line + 1, false)[1] or ''
+	return vim.str_byteindex(line, offset_encoding, col, false)
 end
 
 return M
